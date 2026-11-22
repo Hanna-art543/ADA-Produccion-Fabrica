@@ -1,10 +1,12 @@
 {
+  "hayFactible": true,
   "corridas": 1000,
   "corridasFactibles": 23,
-  "makespanPromedio": 251.32887337020276,
-  "energiaPromedio": 4556.124433039217,
-  "costoPromedio": 706.9413166741248,
-  "algoritmo": "Aleatorio (mejor)",
+  "porcentajeFactibles": 2.3,
+  "makespanPromedioFactibles": 311.7821984683878,
+  "energiaPromedioFactibles": 4458.648630292697,
+  "costoPromedioFactibles": 757.6470614976574,
+  "algoritmo": "Aleatorio (mejor factible)",
   "escenario": "Mediano",
   "asignaciones": [
     {
@@ -553,6 +555,6 @@
   "energiaMax": 4470.64,
   "costoTotal": 690.5857516339869,
   "factible": true,
-  "tiempoEjecucionMs": 13.8795,
-  "notas": "1000 corridas, 23 factibles (energía ≤ E_max)."
+  "tiempoEjecucionMs": 13.3012,
+  "notas": "23 de 1000 corridas factibles (energía ≤ E_max)."
 }

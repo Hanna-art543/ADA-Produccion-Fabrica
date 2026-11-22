@@ -3,20 +3,25 @@ using System.Diagnostics;
 
 namespace Fabrica.Core
 {
-    // Resultado del aleatorio: el mejor plan + estadísticas de todas las corridas.
+    // Resultado del aleatorio: el mejor plan factible + estadísticas de las corridas factibles.
+    // Si ninguna corrida es factible: hayFactible = false y el plan va vacío.
     [Serializable]
     public class PlanResultAleatorio : PlanResult
     {
+        public bool hayFactible;
         public int corridas;
         public int corridasFactibles;
-        public double makespanPromedio;
-        public double energiaPromedio;
-        public double costoPromedio;
+        public double porcentajeFactibles;
+        public double makespanPromedioFactibles;
+        public double energiaPromedioFactibles;
+        public double costoPromedioFactibles;
     }
 
     // Línea base: cada tarea a una máquina válida al azar; se repite N veces con semilla fija.
     public static class Aleatorio
     {
+        public const string Nombre = "Aleatorio (mejor factible)";
+
         public static PlanResultAleatorio Resolver(Escenario esc, int corridas, ulong semilla)
         {
             var sw = Stopwatch.StartNew();
@@ -24,7 +29,6 @@ namespace Fabrica.Core
             int n = esc.NumTareas;
             int[] maq = new int[n];
             int[] mejor = null;
-            bool mejorFactible = false;
             double mejorCosto = double.MaxValue;
             double sumaMk = 0, sumaE = 0, sumaC = 0;
             int factibles = 0;
@@ -37,44 +41,53 @@ namespace Fabrica.Core
                     maq[j] = v[rng.Siguiente(v.Length)];
                 }
                 Simulador.Evaluar(esc, maq, out double mk, out double en);
-                double costo = esc.Costo(mk, en);
-                bool fact = Simulador.EsFactible(esc, en);
-                sumaMk += mk; sumaE += en; sumaC += costo;
-                if (fact) factibles++;
+                if (!Simulador.EsFactible(esc, en)) continue;
 
-                // Mejor = menor costo entre las factibles (si no hay ninguna, menor costo)
-                bool reemplazar = mejor == null
-                                  || (fact && !mejorFactible)
-                                  || (fact == mejorFactible && costo < mejorCosto);
-                if (reemplazar)
+                // Solo cuentan las corridas factibles
+                double costo = esc.Costo(mk, en);
+                factibles++;
+                sumaMk += mk; sumaE += en; sumaC += costo;
+                if (costo < mejorCosto)
                 {
-                    mejor = (int[])maq.Clone();
-                    mejorFactible = fact;
                     mejorCosto = costo;
+                    mejor = (int[])maq.Clone();
                 }
             }
             sw.Stop();
 
-            PlanResult basePlan = Simulador.Simular(esc, mejor, "Aleatorio (mejor)");
-            var r = new PlanResultAleatorio
+            PlanResultAleatorio r;
+            if (mejor != null)
             {
-                algoritmo = basePlan.algoritmo,
-                escenario = basePlan.escenario,
-                asignaciones = basePlan.asignaciones,
-                makespan = basePlan.makespan,
-                energiaTotal = basePlan.energiaTotal,
-                energiaMax = basePlan.energiaMax,
-                costoTotal = basePlan.costoTotal,
-                factible = basePlan.factible,
-                tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds,
-                corridas = corridas,
-                corridasFactibles = factibles,
-                makespanPromedio = sumaMk / corridas,
-                energiaPromedio = sumaE / corridas,
-                costoPromedio = sumaC / corridas,
-                notas = corridas + " corridas, " + factibles + " factibles (energía ≤ E_max)."
-            };
-            r.FijarMaquinas(mejor);
+                PlanResult p = Simulador.Simular(esc, mejor, Nombre);
+                r = new PlanResultAleatorio
+                {
+                    asignaciones = p.asignaciones,
+                    makespan = p.makespan,
+                    energiaTotal = p.energiaTotal,
+                    costoTotal = p.costoTotal,
+                    factible = p.factible,
+                    hayFactible = true,
+                    makespanPromedioFactibles = sumaMk / factibles,
+                    energiaPromedioFactibles = sumaE / factibles,
+                    costoPromedioFactibles = sumaC / factibles
+                };
+                r.FijarMaquinas(mejor);
+            }
+            else
+            {
+                r = new PlanResultAleatorio { hayFactible = false, factible = false };
+            }
+
+            r.algoritmo = Nombre;
+            r.escenario = esc.nombre;
+            r.energiaMax = esc.energiaMax;
+            r.tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds;
+            r.corridas = corridas;
+            r.corridasFactibles = factibles;
+            r.porcentajeFactibles = 100.0 * factibles / corridas;
+            r.notas = factibles > 0
+                ? factibles + " de " + corridas + " corridas factibles (energía ≤ E_max)."
+                : "Sin solución factible: ninguna de las " + corridas + " corridas cumple E_max.";
             return r;
         }
     }

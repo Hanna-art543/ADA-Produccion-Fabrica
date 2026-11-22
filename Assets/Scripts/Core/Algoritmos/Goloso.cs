@@ -1,30 +1,38 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Fabrica.Core
 {
     // Goloso LPT: piezas por trabajo total descendente; cada etapa de la pieza va a
-    // la máquina que minimiza (fin + λ·energía). Solo se aceptan máquinas que dejan
-    // energía suficiente para el resto (cota de energía mínima restante) => siempre factible.
+    // la máquina que minimiza (fin + λ·energía).
+    // λ se calibra con búsqueda binaria (CalibracionLambda) para usar la energía
+    // disponible hasta E_max sin pasarse.
     public static class Goloso
     {
-        public static PlanResult Resolver(Escenario esc)
+        public static PlanResult Resolver(Escenario esc, int iteracionesCalibracion)
         {
             var sw = Stopwatch.StartNew();
-            int[] maq = Asignar(esc, esc.lambda);
+            var cal = CalibracionLambda.Calibrar(esc, lam => Asignar(esc, lam), iteracionesCalibracion);
             sw.Stop();
-            var r = Simulador.Simular(esc, maq, "Goloso (LPT)");
+            var r = Simulador.Simular(esc, cal.asignacion, "Goloso (LPT)");
             r.tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds;
+            r.notas = NotaCalibracion(cal);
             return r;
         }
 
+        public static string NotaCalibracion(CalibracionLambda.Resultado cal)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "λ calibrado = {0:G6} ({1} evaluaciones de la búsqueda binaria).", cal.lambda, cal.evaluaciones);
+        }
+
+        // Una pasada golosa con λ fijo. O(n·m) tras el orden LPT.
         public static int[] Asignar(Escenario esc, double lambda)
         {
             int n = esc.NumTareas, M = esc.NumMaquinas;
             int[] maq = new int[n];
             double[] libre = new double[M];
-            double energiaUsada = 0;
-            double energiaMinRestante = esc.EnergiaMinimaTotal();
 
             foreach (int p in esc.OrdenPiezas())
             {
@@ -32,18 +40,15 @@ namespace Fabrica.Core
                 for (int s = 0; s < Etapas.Cantidad; s++)
                 {
                     int j = Escenario.IdTarea(p, s);
-                    energiaMinRestante -= esc.EnergiaMinima(j);
-
                     int mejor = -1;
                     double mejorCrit = double.MaxValue, mejorE = double.MaxValue, mejorFin = 0;
                     foreach (int i in esc.Validas(j))
                     {
                         double e = esc.Energia(j, i);
-                        // ¿Sigue siendo posible terminar sin pasar E_max?
-                        if (energiaUsada + e + energiaMinRestante > esc.energiaMax + Simulador.Tolerancia) continue;
                         double fin = Math.Max(listo, libre[i]) + esc.Tiempo(j, i);
                         double crit = fin + lambda * e;
-                        if (crit < mejorCrit - 1e-12 || (Math.Abs(crit - mejorCrit) <= 1e-12 && e < mejorE))
+                        // Desempate por menor energía
+                        if (crit < mejorCrit || (crit == mejorCrit && e < mejorE))
                         {
                             mejor = i;
                             mejorCrit = crit;
@@ -51,17 +56,9 @@ namespace Fabrica.Core
                             mejorFin = fin;
                         }
                     }
-                    if (mejor < 0) // solo si E_max < energía mínima (instancia infactible)
-                    {
-                        mejor = MaquinaMinEnergia(esc, j);
-                        mejorE = esc.Energia(j, mejor);
-                        mejorFin = Math.Max(listo, libre[mejor]) + esc.Tiempo(j, mejor);
-                    }
-
                     maq[j] = mejor;
                     libre[mejor] = mejorFin;
                     listo = mejorFin;
-                    energiaUsada += mejorE;
                 }
             }
             return maq;

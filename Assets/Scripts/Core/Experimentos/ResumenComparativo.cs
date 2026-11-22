@@ -14,6 +14,7 @@ namespace Fabrica.Core
         public double gapPorcentaje;
         public double tiempoMs;
         public bool factible;
+        public bool sinSolucion; // true => no hay plan factible (sin valores)
     }
 
     [Serializable]
@@ -31,6 +32,7 @@ namespace Fabrica.Core
         public double costoReferencia;
         public double cotaInferior;
         public List<FilaComparativa> filas = new List<FilaComparativa>();
+        public List<string> notas = new List<string>();
     }
 
     [Serializable]

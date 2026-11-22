@@ -45,9 +45,14 @@ namespace Fabrica.ConsoleTest
             foreach (var res in resultados)
             {
                 var esc = res.escenario;
+                // El aleatorio sin ninguna corrida factible no tiene plan que verificar
+                res.planes.RemoveAll(e => e.plan is PlanResultAleatorio pa && !pa.hayFactible
+                                          && Check(pa.asignaciones.Count == 0, esc.nombre + " / Aleatorio: sin solución factible (plan vacío)"));
+
                 foreach (var e in res.planes)
                 {
                     var p = e.plan;
+                    ok &= Check(p.factible, esc.nombre + " / " + p.algoritmo + ": factible (energía ≤ E_max)");
                     // Recalcular con el Simulador y comparar
                     Simulador.Evaluar(esc, p.MaquinaPorTarea(), out double mk, out double en);
                     ok &= Check(Math.Abs(mk - p.makespan) < 1e-6 && Math.Abs(en - p.energiaTotal) < 1e-6,

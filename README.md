@@ -49,10 +49,10 @@ Assets/Scripts/Core/            C# puro (namespace Fabrica.Core), sin UnityEngin
   Rng.cs                        PRNG propio (mismos resultados en Unity y .NET)
   Algoritmos/
     Goloso.cs                   LPT + min(fin + λ·energía)
+    CalibracionLambda.cs        búsqueda binaria de λ (energía lo más cerca de E_max sin pasarse)
     DivideVenceras.cs           por etapas + división recursiva de máquinas
-    ReparacionEnergia.cs        ajuste a E_max (usado por D&V)
     ProgramacionDinamica.cs     dp[i][e] con energía discretizada
-    Aleatorio.cs                1000 corridas, promedio y mejor
+    Aleatorio.cs                1000 corridas: % factibles, promedio de factibles y mejor factible
     BranchAndBound.cs           exacto para n ≤ 8 piezas
     RecocidoSimulado.cs         mover / intercambiar, penalización por E_max
   Experimentos/                 Experimento, Cotas, Comparador (tabla), ExportadorJson, ResumenComparativo
@@ -93,17 +93,24 @@ Termina con código 1 si alguna verificación falla.
 ### Goloso (LPT)
 
 1. Ordena las piezas por trabajo total, de mayor a menor (LPT).
-2. Para cada pieza y cada etapa, elige la máquina válida que minimiza `fin + λ·e_ij`, con `λ = β/α` por defecto.
-3. Solo acepta una máquina si `energía usada + e_ij + energía mínima de las tareas restantes ≤ E_max`. Con eso el plan siempre es factible.
+2. Para cada pieza y cada etapa, elige la máquina válida que minimiza `fin + λ·e_ij`.
+3. **Calibración de λ (búsqueda binaria, `k = 30` iteraciones):**
+   - Con `λ = 0` solo importa el tiempo y se gasta la máxima energía. Si ese plan ya es factible, se usa.
+   - Con `λ` muy grande, cada tarea va a su máquina de mínima energía, así que siempre es factible.
+   - Se busca en escala logarítmica `λ = 10^x`, con `x ∈ [-4, 9]`, manteniendo factible el extremo alto. Se queda con el `λ` cuya energía total está **lo más cerca posible de `E_max` sin pasarse**.
+   - Así el presupuesto de energía se reparte por igual entre todas las piezas, en vez de agotarse en las primeras.
+
+El λ elegido queda en el campo `notas` del JSON.
 
 ### Divide y Vencerás
 
 1. **Dividir por etapas:** Corte, Ensamblaje y Empaquetado se resuelven en orden. Los tiempos de liberación de cada etapa son los fines de la etapa anterior.
 2. **Dentro de cada etapa** (recursivo):
    - Se divide el grupo de máquinas capaces en dos mitades de capacidad parecida (reparto en serpiente por velocidad).
-   - Las tareas (en orden LPT) se reparten entre las dos mitades con el criterio `(carga + w)/Σv + λ·w·ΣP/Σv`.
+   - Las tareas (en orden LPT) se reparten entre las dos mitades con el criterio goloso `(carga + w)/Σv + λ·w·min(P/v)`. El término de energía usa la máquina más eficiente del subgrupo; así, con λ grande, cada tarea baja hasta su máquina de mínima energía.
    - Se recurre en cada mitad. El caso base es una sola máquina.
-3. **Combinar:** como las mitades no comparten máquinas, se unen las asignaciones y se secuencia la etapa según los tiempos de liberación. Si al final se excede `E_max`, se reparan movimientos hacia máquinas más eficientes.
+3. **Combinar:** como las mitades no comparten máquinas, se unen las asignaciones y se secuencia la etapa según los tiempos de liberación.
+4. **λ** se calibra con la misma búsqueda binaria del Goloso. Por eso el plan siempre es factible y no hace falta ningún paso de reparación.
 
 ### Programación Dinámica
 
@@ -130,22 +137,34 @@ Termina con código 1 si alguna verificación falla.
 | Algoritmo         |  Costo | Gap vs óptimo |
 |-------------------|-------:|--------------:|
 | Branch & Bound    | 239.22 |        0.00 % |
+| Divide y Vencerás | 247.97 |        3.66 % |
 | Prog. Dinámica    | 260.82 |        9.03 % |
-| Divide y Vencerás | 287.04 |       19.99 % |
-| Goloso (LPT)      | 309.56 |       29.41 % |
+| Goloso (LPT)      | 271.85 |       13.64 % |
 
-En el escenario grande la diferencia crece:
+En los escenarios mediano y grande, la PD es el mejor de los tres métodos constructivos (Goloso, D&V y PD):
 
-| Algoritmo    | Makespan | Costo   |
-|--------------|---------:|--------:|
-| Prog. Dinámica | 806.85 | 1706.37 |
-| Goloso (LPT)   | 1538.64 | 2456.27 |
+| Escenario | Goloso (costo) | D&V (costo) | PD (costo) |
+|-----------|---------------:|------------:|-----------:|
+| Mediano   |         718.64 |      673.89 |     645.83 |
+| Grande    |        1818.70 |     1945.90 |    1706.37 |
 
-El goloso gasta el presupuesto de energía en las primeras piezas (máquinas rápidas) y obliga a las últimas a ir a máquinas lentas. La PD reparte el presupuesto entre todas las tareas.
+El Goloso y D&V usan **un solo λ** para todas las tareas:
+
+- Para no pasarse de `E_max` en el escenario grande, necesitan λ ≈ 20.
+- Con ese peso, muchas tareas se van a máquinas lentas aunque no haga falta.
+- La PD decide tarea por tarea cuánta energía usar y redistribuye el presupuesto donde más reduce el makespan.
 
 ### Aleatorio
 
-Cada tarea va a una máquina válida al azar. Se hacen 1000 corridas con semilla fija y se reporta la **mejor** (menor costo entre las factibles) y el **promedio**. El JSON incluye `corridasFactibles`, `makespanPromedio`, `energiaPromedio` y `costoPromedio`.
+Cada tarea va a una máquina válida al azar. Se hacen 1000 corridas con semilla fija y se reporta:
+
+- **% factibles:** corridas con energía ≤ `E_max`.
+- **Mejor factible:** la de menor costo entre las factibles.
+- **Promedio de factibles:** makespan, energía y costo promedio, solo de las corridas factibles.
+
+Si ninguna corrida es factible, la tabla muestra **"sin solución factible"**. En ese caso el JSON queda con `hayFactible = false` y sin asignaciones.
+
+Campos del JSON: `hayFactible`, `corridas`, `corridasFactibles`, `porcentajeFactibles`, `makespanPromedioFactibles`, `energiaPromedioFactibles` y `costoPromedioFactibles`.
 
 ### Branch & Bound (método extra, exacto)
 
@@ -166,13 +185,13 @@ Se poda si `α·LB_mk + β·LB_e ≥ mejor` o si `LB_e > E_max`. Cada hoja se ev
 
 ## 5. Complejidades
 
-`n` = tareas (3 × piezas), `m` = máquinas, `P` = piezas, `R` = resolución de energía de la PD, `I` = iteraciones del recocido y `K` = corridas del aleatorio. Una llamada a `Simular()` cuesta `O(n·P)`.
+`n` = tareas (3 × piezas), `m` = máquinas, `P` = piezas, `k` = iteraciones de la búsqueda binaria de λ (30), `R` = resolución de energía de la PD, `I` = iteraciones del recocido y `K` = corridas del aleatorio. Una llamada a `Simular()` cuesta `O(n·P)`.
 
 | Algoritmo           | Tiempo                                | Espacio      | Comentario |
 |---------------------|---------------------------------------|--------------|------------|
 | Simular             | O(n·P)                                | O(n + m)     | En cada paso elige entre ≤ P tareas listas |
-| Goloso (LPT)        | O(P log P + n·m)                      | O(n + m)     | Orden LPT + una pasada evaluando m máquinas |
-| Divide y Vencerás   | O(n log n + n log m) + reparación     | O(n + m)     | T(n, m) = T(n₁, m/2) + T(n₂, m/2) + O(n): profundidad log m, O(n) por nivel. La reparación, solo si hace falta, es O(k·n·m) |
+| Goloso (LPT)        | O(k·(n log n + n·m))                  | O(n + m)     | k pasadas golosas (orden LPT + evaluar m máquinas por tarea), una por cada λ de la búsqueda binaria |
+| Divide y Vencerás   | O(k·(n log n + n·m))                  | O(n + m)     | Cada pasada: T(n, m) = T(n₁, m/2) + T(n₂, m/2) + O(n + m), o sea profundidad log m con O(n + m) por nivel, más el orden O(n log n). Se repite k veces por la calibración de λ |
 | Prog. Dinámica      | O(n·R·m²)                             | O(n·R + R·m) | n·R estados × m transiciones × copia del vector de m cargas. Pseudo-polinomial |
 | Aleatorio           | O(K·n·P)                              | O(n)         | K simulaciones |
 | Branch & Bound      | O(mⁿ·n·P) peor caso                   | O(n + m)     | En la práctica, la poda explora muy pocos nodos (ver `notas` en el JSON) |
@@ -183,38 +202,40 @@ Se poda si `α·LB_mk + β·LB_e ≥ mejor` o si `LB_e > E_max`. Cada hoja se ev
 ```
 === Escenario 1: Pequeño (6 piezas, 18 tareas, 3 máquinas) | E_max = 1047.87 | α = 1 β = 0.1 ===
 Referencia: óptimo de Branch & Bound, costo = 239.22
-Algoritmo              |  Makespan |   Energía |     Costo |  Gap vs ópt (%) | Factible
-Goloso (LPT)           |    204.81 |   1047.50 |    309.56 |           29.41 | sí
-Divide y Vencerás      |    184.01 |   1030.26 |    287.04 |           19.99 | sí
-Prog. Dinámica         |    156.58 |   1042.46 |    260.82 |            9.03 | sí
-Aleatorio (mejor)      |    147.65 |   1037.80 |    251.43 |            5.10 | sí
-Aleatorio (promedio)   |    160.85 |   1091.39 |    269.99 |           12.86 | NO
-Recocido Simulado      |    135.67 |   1046.64 |    240.33 |            0.47 | sí
-Branch & Bound         |    134.76 |   1044.56 |    239.22 |            0.00 | sí
+Algoritmo                   |  Makespan |   Energía |     Costo |  Gap vs ópt (%) | Factible
+Goloso (LPT)                |    167.81 |   1040.45 |    271.85 |           13.64 | sí
+Divide y Vencerás           |    143.20 |   1047.71 |    247.97 |            3.66 | sí
+Prog. Dinámica              |    156.58 |   1042.46 |    260.82 |            9.03 | sí
+Aleatorio (mejor factible)  |    147.65 |   1037.80 |    251.43 |            5.10 | sí
+Aleatorio (prom. factibles) |    199.11 |   1027.08 |    301.82 |           26.17 | sí
+Recocido Simulado           |    135.67 |   1046.64 |    240.33 |            0.47 | sí
+Branch & Bound              |    134.76 |   1044.56 |    239.22 |            0.00 | sí
+Aleatorio: 13.2 % factibles (132 de 1000 corridas).
 
 === Escenario 2: Mediano (20 piezas, 60 tareas, 5 máquinas) | E_max = 4470.64 ===
 Referencia: COTA INFERIOR (no es el óptimo), costo ≥ 544.61
-Goloso (LPT)           |    255.35 |   4470.04 |    702.36 |           28.97 | sí
-Divide y Vencerás      |    240.31 |   4466.88 |    687.00 |           26.15 | sí
-Prog. Dinámica         |    202.23 |   4436.04 |    645.83 |           18.59 | sí
-Aleatorio (mejor)      |    245.29 |   4452.92 |    690.59 |           26.80 | sí
-Aleatorio (promedio)   |    251.33 |   4556.12 |    706.94 |           29.81 | NO
-Recocido Simulado      |    168.50 |   4470.47 |    615.55 |           13.03 | sí
+Goloso (LPT)                |    272.26 |   4463.77 |    718.64 |           31.96 | sí
+Divide y Vencerás           |    227.06 |   4468.24 |    673.89 |           23.74 | sí
+Prog. Dinámica              |    202.23 |   4436.04 |    645.83 |           18.59 | sí
+Aleatorio (mejor factible)  |    245.29 |   4452.92 |    690.59 |           26.80 | sí
+Aleatorio (prom. factibles) |    311.78 |   4458.65 |    757.65 |           39.12 | sí
+Recocido Simulado           |    168.82 |   4470.51 |    615.87 |           13.09 | sí
+Aleatorio: 2.3 % factibles (23 de 1000 corridas).
 
 === Escenario 3: Grande (50 piezas, 150 tareas, 8 máquinas) | E_max = 9176.58 ===
 Referencia: COTA INFERIOR (no es el óptimo), costo ≥ 1037.41
-Goloso (LPT)           |   1538.64 |   9176.34 |   2456.27 |          136.77 | sí
-Divide y Vencerás      |   1708.64 |   9158.04 |   2624.44 |          152.98 | sí
-Prog. Dinámica         |    806.85 |   8995.12 |   1706.37 |           64.48 | sí
-Aleatorio (mejor)      |    473.50 |  10300.67 |   1503.57 |           44.93 | NO
-Aleatorio (promedio)   |    664.42 |  10130.53 |   1677.47 |           61.70 | NO
-Recocido Simulado      |    714.33 |   9173.42 |   1631.68 |           57.28 | sí
+Goloso (LPT)                |    902.45 |   9162.46 |   1818.70 |           75.31 | sí
+Divide y Vencerás           |   1031.05 |   9148.41 |   1945.90 |           87.57 | sí
+Prog. Dinámica              |    806.85 |   8995.12 |   1706.37 |           64.48 | sí
+Aleatorio                   | sin solución factible
+Recocido Simulado           |    714.55 |   9164.07 |   1630.95 |           57.21 | sí
+Aleatorio: 0.0 % factibles (0 de 1000 corridas).
 ```
 
 Notas sobre la tabla:
 
 - En los escenarios 2 y 3, el gap se mide contra una **cota inferior** que no tiene por qué ser alcanzable. Por eso el gap real es menor que el reportado.
-- "Aleatorio (promedio)" aparece como **NO** factible porque no todas las corridas cumplen `E_max`.
-- En el escenario 3, ninguna de las 1000 corridas aleatorias fue factible.
+- El Goloso supera al promedio de las corridas aleatorias factibles en los escenarios donde ese promedio existe (271.85 < 301.82 y 718.64 < 757.65).
+- En el escenario grande, al azar no se encuentra ningún plan que respete `E_max`. El Goloso calibrado sí lo encuentra.
 
 Los tiempos de ejecución (ms) están en la salida de consola y en `Resultados/resumen_comparativo.json`.

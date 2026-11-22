@@ -11,21 +11,21 @@ namespace Fabrica.Core
     //     mitades de capacidad parecida y se reparten las tareas (LPT) entre ambas con el
     //     criterio goloso (fin estimado + λ·energía). Caso base: una sola máquina.
     //     Como los subgrupos son disjuntos, combinar es unir las asignaciones y secuenciarlas.
-    // Al final se repara la energía si se pasó de E_max.
+    // λ se calibra con búsqueda binaria (CalibracionLambda) para quedar lo más cerca de E_max sin pasarse.
     public static class DivideVenceras
     {
-        public static PlanResult Resolver(Escenario esc)
+        public static PlanResult Resolver(Escenario esc, int iteracionesCalibracion)
         {
             var sw = Stopwatch.StartNew();
-            int[] maq = Asignar(esc, esc.lambda, out int reparaciones);
+            var cal = CalibracionLambda.Calibrar(esc, lam => Asignar(esc, lam), iteracionesCalibracion);
             sw.Stop();
-            var r = Simulador.Simular(esc, maq, "Divide y Vencerás");
+            var r = Simulador.Simular(esc, cal.asignacion, "Divide y Vencerás");
             r.tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds;
-            if (reparaciones > 0) r.notas = "Reparación de energía: " + reparaciones + " movimientos.";
+            r.notas = Goloso.NotaCalibracion(cal);
             return r;
         }
 
-        public static int[] Asignar(Escenario esc, double lambda, out int reparaciones)
+        public static int[] Asignar(Escenario esc, double lambda)
         {
             int n = esc.NumTareas, M = esc.NumMaquinas, P = esc.numPiezas;
             int[] maq = new int[n];
@@ -51,7 +51,6 @@ namespace Fabrica.Core
                 CombinarEtapa(esc, s, maq, libre, finPieza);
             }
 
-            reparaciones = ReparacionEnergia.Reparar(esc, maq);
             return maq;
         }
 
@@ -81,7 +80,8 @@ namespace Fabrica.Core
                 else g2.Add(ordenadas[k]);
             }
 
-            // Capacidad (Σv), carga inicial en unidades de trabajo y energía por unidad de trabajo (ΣP/Σv)
+            // Capacidad (Σv), carga inicial en unidades de trabajo y la menor energía por unidad
+            // de trabajo del grupo (min P/v). Con λ grande cada tarea baja hasta su máquina más eficiente.
             Resumir(esc, g1, libre, out double v1, out double carga1, out double tasa1);
             Resumir(esc, g2, libre, out double v2, out double carga2, out double tasa2);
 
@@ -103,16 +103,14 @@ namespace Fabrica.Core
         private static void Resumir(Escenario esc, List<int> g, double[] libre,
                                     out double v, out double carga, out double tasa)
         {
-            v = 0; carga = 0;
-            double pot = 0;
+            v = 0; carga = 0; tasa = double.MaxValue;
             foreach (int i in g)
             {
                 Machine m = esc.maquinas[i];
                 v += m.velocidad;
-                pot += m.potencia;
                 carga += libre[i] * m.velocidad; // tiempo ocupado convertido a trabajo
+                tasa = Math.Min(tasa, m.potencia / m.velocidad);
             }
-            tasa = pot / v;
         }
 
         // Combinar: secuencia la etapa respetando liberaciones (fin de la etapa anterior).

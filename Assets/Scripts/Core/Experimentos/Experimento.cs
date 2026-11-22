@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Fabrica.Core
 {
@@ -9,7 +10,8 @@ namespace Fabrica.Core
         public int semilla = 2024;
         public double alfa = 1.0;
         public double beta = 0.1;
-        public double lambda = -1;            // < 0 => λ = β/α
+        public double lambda = -1;            // λ inicial para B&B (< 0 => β/α); Goloso y D&V lo calibran
+        public int iteracionesCalibracion = 30; // búsqueda binaria de λ (Goloso y D&V)
         public double holguraEnergia = 0.35;  // E_max = Emin + holgura·(Emax_posible − Emin)
         public int corridasAleatorio = 1000;
         public int iteracionesRecocido = 20000;
@@ -46,9 +48,9 @@ namespace Fabrica.Core
                 var res = new ResultadoEscenario { escenario = esc };
                 ulong semillaEsc = (ulong)cfg.semilla * 7919UL + (ulong)esc.numero;
 
-                PlanResult greedy = Goloso.Resolver(esc);
+                PlanResult greedy = Goloso.Resolver(esc, cfg.iteracionesCalibracion);
                 res.planes.Add(new EntradaPlan { clave = "greedy", plan = greedy });
-                res.planes.Add(new EntradaPlan { clave = "dc", plan = DivideVenceras.Resolver(esc) });
+                res.planes.Add(new EntradaPlan { clave = "dc", plan = DivideVenceras.Resolver(esc, cfg.iteracionesCalibracion) });
                 res.planes.Add(new EntradaPlan { clave = "pd", plan = ProgramacionDinamica.Resolver(esc, cfg.resolucionPD) });
                 res.planes.Add(new EntradaPlan { clave = "random", plan = Aleatorio.Resolver(esc, cfg.corridasAleatorio, semillaEsc) });
                 res.planes.Add(new EntradaPlan
@@ -103,13 +105,34 @@ namespace Fabrica.Core
                 foreach (var e in res.planes)
                 {
                     var p = e.plan;
-                    r.filas.Add(Fila(p.algoritmo, p.makespan, p.energiaTotal, p.costoTotal, p.tiempoEjecucionMs,
-                                     p.factible, res.costoReferencia));
                     var pa = p as PlanResultAleatorio;
-                    if (pa != null)
+                    if (pa == null)
                     {
-                        r.filas.Add(Fila("Aleatorio (promedio)", pa.makespanPromedio, pa.energiaPromedio, pa.costoPromedio,
-                                         pa.tiempoEjecucionMs, pa.corridasFactibles == pa.corridas, res.costoReferencia));
+                        r.filas.Add(Fila(p.algoritmo, p.makespan, p.energiaTotal, p.costoTotal, p.tiempoEjecucionMs,
+                                         p.factible, res.costoReferencia));
+                        continue;
+                    }
+
+                    // Aleatorio: mejor factible + promedio de factibles, o "sin solución factible"
+                    r.notas.Add(string.Format(CultureInfo.InvariantCulture,
+                        "Aleatorio: {0:F1} % factibles ({1} de {2} corridas).",
+                        pa.porcentajeFactibles, pa.corridasFactibles, pa.corridas));
+                    if (pa.hayFactible)
+                    {
+                        r.filas.Add(Fila(p.algoritmo, p.makespan, p.energiaTotal, p.costoTotal, p.tiempoEjecucionMs,
+                                         true, res.costoReferencia));
+                        r.filas.Add(Fila("Aleatorio (prom. factibles)", pa.makespanPromedioFactibles,
+                                         pa.energiaPromedioFactibles, pa.costoPromedioFactibles,
+                                         pa.tiempoEjecucionMs, true, res.costoReferencia));
+                    }
+                    else
+                    {
+                        r.filas.Add(new FilaComparativa
+                        {
+                            algoritmo = "Aleatorio",
+                            sinSolucion = true,
+                            tiempoMs = pa.tiempoEjecucionMs
+                        });
                     }
                 }
                 resumen.escenarios.Add(r);
