@@ -1,0 +1,26 @@
+# Unity
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/*.csproj
+/*.sln
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Editores
+.vs/
+.vscode/
+.idea/
+
+# ConsoleTest (.NET)
+Tools/ConsoleTest/bin/
+Tools/ConsoleTest/obj/
+
+# Herramientas locales
+.claude/

@@ -1,0 +1,553 @@
+{
+  "algoritmo": "Divide y Vencerás",
+  "escenario": "Mediano",
+  "asignaciones": [
+    {
+      "jobId": 45,
+      "piezaId": 15,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 0,
+      "fin": 20,
+      "energia": 114.2
+    },
+    {
+      "jobId": 15,
+      "piezaId": 5,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 0,
+      "fin": 15,
+      "energia": 126.74999999999999
+    },
+    {
+      "jobId": 18,
+      "piezaId": 6,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 0,
+      "fin": 15.6,
+      "energia": 124.8
+    },
+    {
+      "jobId": 16,
+      "piezaId": 5,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 15,
+      "fin": 21.923076923076923,
+      "energia": 58.49999999999999
+    },
+    {
+      "jobId": 19,
+      "piezaId": 6,
+      "etapa": 1,
+      "maquinaId": 4,
+      "inicio": 15.6,
+      "fin": 22.070588235294117,
+      "energia": 32.87058823529412
+    },
+    {
+      "jobId": 54,
+      "piezaId": 18,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 15.6,
+      "fin": 25.2,
+      "energia": 76.8
+    },
+    {
+      "jobId": 6,
+      "piezaId": 2,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 20,
+      "fin": 34,
+      "energia": 79.94
+    },
+    {
+      "jobId": 12,
+      "piezaId": 4,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 21.923076923076923,
+      "fin": 34.61538461538461,
+      "energia": 107.24999999999999
+    },
+    {
+      "jobId": 46,
+      "piezaId": 15,
+      "etapa": 1,
+      "maquinaId": 4,
+      "inicio": 22.070588235294117,
+      "fin": 34.423529411764704,
+      "energia": 62.75294117647059
+    },
+    {
+      "jobId": 17,
+      "piezaId": 5,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 25.2,
+      "fin": 40.4,
+      "energia": 121.6
+    },
+    {
+      "jobId": 21,
+      "piezaId": 7,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 34,
+      "fin": 43.5,
+      "energia": 54.245
+    },
+    {
+      "jobId": 7,
+      "piezaId": 2,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 34.61538461538461,
+      "fin": 48.07692307692307,
+      "energia": 113.74999999999999
+    },
+    {
+      "jobId": 47,
+      "piezaId": 15,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 40.4,
+      "fin": 56.4,
+      "energia": 128
+    },
+    {
+      "jobId": 39,
+      "piezaId": 13,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 43.5,
+      "fin": 63,
+      "energia": 111.345
+    },
+    {
+      "jobId": 13,
+      "piezaId": 4,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 48.07692307692307,
+      "fin": 59.61538461538461,
+      "energia": 97.49999999999999
+    },
+    {
+      "jobId": 22,
+      "piezaId": 7,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 59.61538461538461,
+      "fin": 74.23076923076923,
+      "energia": 123.49999999999999
+    },
+    {
+      "jobId": 8,
+      "piezaId": 2,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 63,
+      "fin": 79.5,
+      "energia": 94.215
+    },
+    {
+      "jobId": 40,
+      "piezaId": 13,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 74.23076923076923,
+      "fin": 83.46153846153845,
+      "energia": 77.99999999999999
+    },
+    {
+      "jobId": 14,
+      "piezaId": 4,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 79.5,
+      "fin": 93.5,
+      "energia": 79.94
+    },
+    {
+      "jobId": 41,
+      "piezaId": 13,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 83.46153846153845,
+      "fin": 91.06153846153845,
+      "energia": 60.8
+    },
+    {
+      "jobId": 48,
+      "piezaId": 16,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 83.46153846153845,
+      "fin": 94.61538461538461,
+      "energia": 94.24999999999999
+    },
+    {
+      "jobId": 23,
+      "piezaId": 7,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 93.5,
+      "fin": 106.5,
+      "energia": 74.23
+    },
+    {
+      "jobId": 49,
+      "piezaId": 16,
+      "etapa": 1,
+      "maquinaId": 4,
+      "inicio": 94.61538461538461,
+      "fin": 105.20361990950227,
+      "energia": 53.78823529411765
+    },
+    {
+      "jobId": 42,
+      "piezaId": 14,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 94.61538461538461,
+      "fin": 102.6923076923077,
+      "energia": 68.24999999999999
+    },
+    {
+      "jobId": 43,
+      "piezaId": 14,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 102.6923076923077,
+      "fin": 110,
+      "energia": 61.74999999999999
+    },
+    {
+      "jobId": 50,
+      "piezaId": 16,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 105.20361990950227,
+      "fin": 116.40361990950227,
+      "energia": 89.6
+    },
+    {
+      "jobId": 33,
+      "piezaId": 11,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 106.5,
+      "fin": 119,
+      "energia": 71.375
+    },
+    {
+      "jobId": 57,
+      "piezaId": 19,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 110,
+      "fin": 125.38461538461539,
+      "energia": 129.99999999999997
+    },
+    {
+      "jobId": 44,
+      "piezaId": 14,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 116.40361990950227,
+      "fin": 128.40361990950225,
+      "energia": 96
+    },
+    {
+      "jobId": 34,
+      "piezaId": 11,
+      "etapa": 1,
+      "maquinaId": 4,
+      "inicio": 119,
+      "fin": 136.05882352941177,
+      "energia": 86.65882352941176
+    },
+    {
+      "jobId": 3,
+      "piezaId": 1,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 119,
+      "fin": 131,
+      "energia": 68.52
+    },
+    {
+      "jobId": 58,
+      "piezaId": 19,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 125.38461538461539,
+      "fin": 133.07692307692307,
+      "energia": 64.99999999999999
+    },
+    {
+      "jobId": 20,
+      "piezaId": 6,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 131,
+      "fin": 141,
+      "energia": 57.1
+    },
+    {
+      "jobId": 4,
+      "piezaId": 1,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 133.07692307692307,
+      "fin": 136.9230769230769,
+      "energia": 32.49999999999999
+    },
+    {
+      "jobId": 36,
+      "piezaId": 12,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 136.9230769230769,
+      "fin": 140.76923076923075,
+      "energia": 32.49999999999999
+    },
+    {
+      "jobId": 37,
+      "piezaId": 12,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 140.76923076923075,
+      "fin": 151.53846153846152,
+      "energia": 90.99999999999999
+    },
+    {
+      "jobId": 35,
+      "piezaId": 11,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 141,
+      "fin": 153.5,
+      "energia": 71.375
+    },
+    {
+      "jobId": 9,
+      "piezaId": 3,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 151.53846153846152,
+      "fin": 158.84615384615384,
+      "energia": 61.74999999999999
+    },
+    {
+      "jobId": 5,
+      "piezaId": 1,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 153.5,
+      "fin": 172.5,
+      "energia": 108.49
+    },
+    {
+      "jobId": 10,
+      "piezaId": 3,
+      "etapa": 1,
+      "maquinaId": 4,
+      "inicio": 158.84615384615384,
+      "fin": 178.2579185520362,
+      "energia": 98.61176470588236
+    },
+    {
+      "jobId": 55,
+      "piezaId": 18,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 158.84615384615384,
+      "fin": 167.3076923076923,
+      "energia": 71.5
+    },
+    {
+      "jobId": 56,
+      "piezaId": 18,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 167.3076923076923,
+      "fin": 172.9076923076923,
+      "energia": 44.8
+    },
+    {
+      "jobId": 27,
+      "piezaId": 9,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 167.3076923076923,
+      "fin": 172.69230769230768,
+      "energia": 45.49999999999999
+    },
+    {
+      "jobId": 59,
+      "piezaId": 19,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 172.5,
+      "fin": 177.5,
+      "energia": 28.55
+    },
+    {
+      "jobId": 28,
+      "piezaId": 9,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 172.69230769230768,
+      "fin": 181.15384615384613,
+      "energia": 71.5
+    },
+    {
+      "jobId": 38,
+      "piezaId": 12,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 177.5,
+      "fin": 193,
+      "energia": 88.505
+    },
+    {
+      "jobId": 11,
+      "piezaId": 3,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 178.2579185520362,
+      "fin": 182.2579185520362,
+      "energia": 32
+    },
+    {
+      "jobId": 51,
+      "piezaId": 17,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 181.15384615384613,
+      "fin": 186.9230769230769,
+      "energia": 48.74999999999999
+    },
+    {
+      "jobId": 52,
+      "piezaId": 17,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 186.9230769230769,
+      "fin": 198.84615384615384,
+      "energia": 100.75
+    },
+    {
+      "jobId": 30,
+      "piezaId": 10,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 193,
+      "fin": 199.5,
+      "energia": 37.115
+    },
+    {
+      "jobId": 0,
+      "piezaId": 0,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 198.84615384615384,
+      "fin": 203.46153846153845,
+      "energia": 38.99999999999999
+    },
+    {
+      "jobId": 29,
+      "piezaId": 9,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 199.5,
+      "fin": 210.5,
+      "energia": 62.81
+    },
+    {
+      "jobId": 31,
+      "piezaId": 10,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 203.46153846153845,
+      "fin": 208.84615384615384,
+      "energia": 45.49999999999999
+    },
+    {
+      "jobId": 32,
+      "piezaId": 10,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 208.84615384615384,
+      "fin": 224.84615384615384,
+      "energia": 128
+    },
+    {
+      "jobId": 1,
+      "piezaId": 0,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 208.84615384615384,
+      "fin": 213.07692307692307,
+      "energia": 35.75
+    },
+    {
+      "jobId": 53,
+      "piezaId": 17,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 210.5,
+      "fin": 216,
+      "energia": 31.405
+    },
+    {
+      "jobId": 24,
+      "piezaId": 8,
+      "etapa": 0,
+      "maquinaId": 3,
+      "inicio": 216,
+      "fin": 224.5,
+      "energia": 48.535
+    },
+    {
+      "jobId": 25,
+      "piezaId": 8,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 224.5,
+      "fin": 231.80769230769232,
+      "energia": 61.74999999999999
+    },
+    {
+      "jobId": 2,
+      "piezaId": 0,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 224.5,
+      "fin": 231,
+      "energia": 37.115
+    },
+    {
+      "jobId": 26,
+      "piezaId": 8,
+      "etapa": 2,
+      "maquinaId": 3,
+      "inicio": 231.80769230769232,
+      "fin": 240.30769230769232,
+      "energia": 48.535
+    }
+  ],
+  "makespan": 240.30769230769232,
+  "energiaTotal": 4466.877352941175,
+  "energiaMax": 4470.64,
+  "costoTotal": 686.9954276018098,
+  "factible": true,
+  "tiempoEjecucionMs": 0.0894,
+  "notas": "Reparación de energía: 22 movimientos."
+}

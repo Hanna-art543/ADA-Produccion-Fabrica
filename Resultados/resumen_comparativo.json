@@ -1,0 +1,222 @@
+{
+  "semilla": 2024,
+  "nota": "Gap = (costo - referencia) / referencia * 100. Referencia: óptimo de Branch & Bound en el escenario pequeño; cota inferior (no alcanzable en general) en los demás.",
+  "escenarios": [
+    {
+      "numero": 1,
+      "nombre": "Pequeño",
+      "piezas": 6,
+      "tareas": 18,
+      "maquinas": 3,
+      "energiaMax": 1047.87,
+      "alfa": 1,
+      "beta": 0.1,
+      "tipoReferencia": "optimo B&B",
+      "costoReferencia": 239.21803921568625,
+      "cotaInferior": 185.92580814143838,
+      "filas": [
+        {
+          "algoritmo": "Goloso (LPT)",
+          "makespan": 204.81283422459893,
+          "energia": 1047.5030557677615,
+          "costo": 309.5631398013751,
+          "gapPorcentaje": 29.406269199566324,
+          "tiempoMs": 0.2251,
+          "factible": true
+        },
+        {
+          "algoritmo": "Divide y Vencerás",
+          "makespan": 184.01069518716577,
+          "energia": 1030.263254392666,
+          "costo": 287.03702062643237,
+          "gapPorcentaje": 19.989705445094412,
+          "tiempoMs": 0.8585,
+          "factible": true
+        },
+        {
+          "algoritmo": "Prog. Dinámica",
+          "makespan": 156.5775401069519,
+          "energia": 1042.4576776165009,
+          "costo": 260.823307868602,
+          "gapPorcentaje": 9.031621830758251,
+          "tiempoMs": 3.1446,
+          "factible": true
+        },
+        {
+          "algoritmo": "Aleatorio (mejor)",
+          "makespan": 147.64705882352942,
+          "energia": 1037.7989304812832,
+          "costo": 251.42695187165774,
+          "gapPorcentaje": 5.103675582326616,
+          "tiempoMs": 2.8859,
+          "factible": true
+        },
+        {
+          "algoritmo": "Aleatorio (promedio)",
+          "makespan": 160.84990068754783,
+          "energia": 1091.3914518716576,
+          "costo": 269.98904587471367,
+          "gapPorcentaje": 12.863163146021503,
+          "tiempoMs": 2.8859,
+          "factible": false
+        },
+        {
+          "algoritmo": "Recocido Simulado",
+          "makespan": 135.67099567099567,
+          "energia": 1046.6385790679906,
+          "costo": 240.33485357779472,
+          "gapPorcentaje": 0.46686042815588724,
+          "tiempoMs": 34.9807,
+          "factible": true
+        },
+        {
+          "algoritmo": "Branch & Bound",
+          "makespan": 134.76190476190476,
+          "energia": 1044.5613445378149,
+          "costo": 239.21803921568625,
+          "gapPorcentaje": 0,
+          "tiempoMs": 4.4009,
+          "factible": true
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "nombre": "Mediano",
+      "piezas": 20,
+      "tareas": 60,
+      "maquinas": 5,
+      "energiaMax": 4470.64,
+      "alfa": 1,
+      "beta": 0.1,
+      "tipoReferencia": "cota inferior",
+      "costoReferencia": 544.607689258312,
+      "cotaInferior": 544.607689258312,
+      "filas": [
+        {
+          "algoritmo": "Goloso (LPT)",
+          "makespan": 255.3529411764706,
+          "energia": 4470.0424509803925,
+          "costo": 702.3571862745099,
+          "gapPorcentaje": 28.965712406858064,
+          "tiempoMs": 0.0091,
+          "factible": true
+        },
+        {
+          "algoritmo": "Divide y Vencerás",
+          "makespan": 240.30769230769232,
+          "energia": 4466.877352941175,
+          "costo": 686.9954276018098,
+          "gapPorcentaje": 26.14501064746481,
+          "tiempoMs": 0.0894,
+          "factible": true
+        },
+        {
+          "algoritmo": "Prog. Dinámica",
+          "makespan": 202.23076923076923,
+          "energia": 4436.038823529413,
+          "costo": 645.8346515837106,
+          "gapPorcentaje": 18.587134247637447,
+          "tiempoMs": 3.4778,
+          "factible": true
+        },
+        {
+          "algoritmo": "Aleatorio (mejor)",
+          "makespan": 245.2941176470588,
+          "energia": 4452.916339869281,
+          "costo": 690.5857516339869,
+          "gapPorcentaje": 26.80426025098523,
+          "tiempoMs": 13.8795,
+          "factible": true
+        },
+        {
+          "algoritmo": "Aleatorio (promedio)",
+          "makespan": 251.32887337020276,
+          "energia": 4556.124433039217,
+          "costo": 706.9413166741248,
+          "gapPorcentaje": 29.807443159109816,
+          "tiempoMs": 13.8795,
+          "factible": false
+        },
+        {
+          "algoritmo": "Recocido Simulado",
+          "makespan": 168.5,
+          "energia": 4470.470294117645,
+          "costo": 615.5470294117645,
+          "gapPorcentaje": 13.025769109147731,
+          "tiempoMs": 177.4114,
+          "factible": true
+        }
+      ]
+    },
+    {
+      "numero": 3,
+      "nombre": "Grande",
+      "piezas": 50,
+      "tareas": 150,
+      "maquinas": 8,
+      "energiaMax": 9176.58,
+      "alfa": 1,
+      "beta": 0.1,
+      "tipoReferencia": "cota inferior",
+      "costoReferencia": 1037.4137373737376,
+      "cotaInferior": 1037.4137373737376,
+      "filas": [
+        {
+          "algoritmo": "Goloso (LPT)",
+          "makespan": 1538.6363636363635,
+          "energia": 9176.342878787875,
+          "costo": 2456.2706515151513,
+          "gapPorcentaje": 136.76866451887534,
+          "tiempoMs": 0.0454,
+          "factible": true
+        },
+        {
+          "algoritmo": "Divide y Vencerás",
+          "makespan": 1708.6363636363649,
+          "energia": 9158.035909090902,
+          "costo": 2624.4399545454553,
+          "gapPorcentaje": 152.97910177952244,
+          "tiempoMs": 1.0538,
+          "factible": true
+        },
+        {
+          "algoritmo": "Prog. Dinámica",
+          "makespan": 806.8545454545455,
+          "energia": 8995.118636363633,
+          "costo": 1706.3664090909087,
+          "gapPorcentaje": 64.4827273456641,
+          "tiempoMs": 17.2289,
+          "factible": true
+        },
+        {
+          "algoritmo": "Aleatorio (mejor)",
+          "makespan": 473.5,
+          "energia": 10300.67363636364,
+          "costo": 1503.567363636364,
+          "gapPorcentaje": 44.93420604229866,
+          "tiempoMs": 17.6289,
+          "factible": false
+        },
+        {
+          "algoritmo": "Aleatorio (promedio)",
+          "makespan": 664.4151267942578,
+          "energia": 10130.529774469702,
+          "costo": 1677.4681042412285,
+          "gapPorcentaje": 61.69711695623186,
+          "tiempoMs": 17.6289,
+          "factible": false
+        },
+        {
+          "algoritmo": "Recocido Simulado",
+          "makespan": 714.3333333333333,
+          "energia": 9173.424166666666,
+          "costo": 1631.6757499999999,
+          "gapPorcentaje": 57.28302905749686,
+          "tiempoMs": 217.4827,
+          "factible": true
+        }
+      ]
+    }
+  ]
+}
