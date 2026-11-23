@@ -1,0 +1,19 @@
+{
+  "hayFactible": false,
+  "corridas": 1000,
+  "corridasFactibles": 0,
+  "porcentajeFactibles": 0,
+  "makespanPromedioFactibles": 0,
+  "energiaPromedioFactibles": 0,
+  "costoPromedioFactibles": 0,
+  "algoritmo": "Aleatorio (mejor factible)",
+  "escenario": "Grande",
+  "asignaciones": [],
+  "makespan": 0,
+  "energiaTotal": 0,
+  "energiaMax": 9176.58,
+  "costoTotal": 0,
+  "factible": false,
+  "tiempoEjecucionMs": 20.4779,
+  "notas": "Sin solución factible: ninguna de las 1000 corridas cumple E_max."
+}

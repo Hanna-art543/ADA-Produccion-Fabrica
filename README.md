@@ -239,3 +239,30 @@ Notas sobre la tabla:
 - En el escenario grande, al azar no se encuentra ningún plan que respete `E_max`. El Goloso calibrado sí lo encuentra.
 
 Los tiempos de ejecución (ms) están en la salida de consola y en `Resultados/resumen_comparativo.json`.
+
+## 7. Escena de simulación en Unity (Persona 3)
+
+La escena se construye **por código**: no hay prefabs ni objetos que armar a mano.
+
+```
+Assets/Scripts/Escena/
+  CargadorResultados.cs     Lee escenarioK_<metodo>.json de StreamingAssets/Resultados (File o UnityWebRequest en WebGL)
+  VisualizadorFabrica.cs    Dibuja y anima un PlanResult: CargarPlan(PlanResult), Play, Pausa, Reiniciar, FijarVelocidad
+  HudFabrica.cs             Controles IMGUI opcionales (play, pausa, reiniciar, tiempo, velocidad, escenario y método)
+Assets/Editor/
+  CrearEscenaFabrica.cs     Menú Fabrica > Persona 3: crea la escena y copia los JSON
+Assets/StreamingAssets/Resultados/   Copia de los JSON (la regenera FabricaRunner en el Editor)
+```
+
+**Cómo probarla**
+
+1. Abre el proyecto en Unity y usa el menú **Fabrica > Persona 3 > Crear escena de simulación**.
+2. Dale Play. Con el HUD cambias de escenario, de método, de velocidad y pausas o reinicias.
+   Atajos de teclado: `Espacio` pausa, `R` reinicia, `↑`/`↓` duplican o reducen la velocidad.
+
+**Cómo la usa la Persona 4**
+
+- Agregar `VisualizadorFabrica` a un GameObject de su escena, desmarcar `cargarAlIniciar` y desmarcar `visible` en `HudFabrica` (o quitarlo).
+- Llamar a `visualizador.CargarPlan(plan)` con un `PlanResult`, o a `visualizador.CargarEscenario(1, "pd")`.
+- Leer `Tiempo`, `EnergiaAcumulada`, `FraccionEnergia`, `PiezasTerminadas` y los eventos `PlanCargado` y `Terminado`.
+- `CargadorResultados.CargarResumen(...)` entrega `resumen_comparativo.json` para el gráfico de barras.
