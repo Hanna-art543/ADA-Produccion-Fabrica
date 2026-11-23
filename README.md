@@ -60,6 +60,7 @@ Assets/Scripts/Runner/
   FabricaRunner.cs              MonoBehaviour: ejecuta, Debug.Log de la tabla, exporta JSON (JsonUtility)
 Tools/ConsoleTest/              Proyecto .NET 8 (C# 9) que compila Core y corre todo + verificaciones
 Resultados/                     escenarioK_{greedy,dc,pd,random,sa[,bb]}.json + resumen_comparativo.json
+Assets/ADA_Fabrica/             Visualizador final en Unity: escena 3D + UI, Gantt y comparación (ver sección 8)
 ```
 
 ## 3. Cómo correrlo
@@ -266,3 +267,49 @@ Assets/StreamingAssets/Resultados/   Copia de los JSON (la regenera FabricaRunne
 - Llamar a `visualizador.CargarPlan(plan)` con un `PlanResult`, o a `visualizador.CargarEscenario(1, "pd")`.
 - Leer `Tiempo`, `EnergiaAcumulada`, `FraccionEnergia`, `PiezasTerminadas` y los eventos `PlanCargado` y `Terminado`.
 - `CargadorResultados.CargarResumen(...)` entrega `resumen_comparativo.json` para el gráfico de barras.
+
+## 8. Visualizador final en Unity (escena 3D + UI)
+
+Es la versión que se presenta y se publica en WebGL. Une la escena de la fábrica con la interfaz (selectores, Gantt, gráfico comparativo y botón Comparar). Todo está en `Assets/ADA_Fabrica/` y no modifica el Core ni los archivos de las secciones anteriores.
+
+```
+Assets/ADA_Fabrica/
+  Scripts/Datos/        RepositorioPlanes (único lector: Resources + JsonUtility, válido en WebGL),
+                        ControladorPlan (CargarPlan(escenario, clave) → evento OnPlanCargado), CalculosFabrica
+  Scripts/Reloj/        IRelojSimulacion / IRelojControlable, RelojSimple (solo escena de prueba)
+  Scripts/Escena3D/     VisualizadorFabrica (línea de N máquinas, piezas, operarios, energía; es el reloj único),
+                        TiempoPiezas (estado de cada pieza en el instante t), AmbienteFabrica, LayoutAmbiente
+  Scripts/UI/           PanelSeleccion, GanttChart, GraficoComparativo, PanelComparar, ControlesReloj, TooltipUI...
+  Editor/               Menú "ADA Fabrica": construye el prefab de la UI, la escena final, la verificación y el build WebGL
+  Modelos/              17 FBX livianos (máquina, cinta, piezas por etapa, operarios, nave), ~850 KB
+  Resources/Resultados/ Copia de los 17 JSON de Resultados/ (desde aquí los lee el visualizador)
+```
+
+Clases en los namespaces `Fabrica.UI` y `Fabrica.Escena`, así que conviven con la escena de la sección 7 sin chocar.
+
+**Cómo abrirlo**
+
+1. Abre la carpeta del repo en **Unity 6** (Unity Hub → Add → Add project from disk). La primera vez Unity genera `ProjectSettings/`, `Packages/` y los `.meta`.
+2. Si lo pide: **Window → TextMeshPro → Import TMP Essential Resources**.
+3. Menú **ADA Fabrica → 3. Construir escena FINAL ADA_Fabrica (única del build)**. Crea `Assets/ADA_Fabrica/Scenes/ADA_Fabrica.unity` y el prefab `ADA_UI`, la deja como única escena del build y corre la verificación (en consola: `[ADA] Verificación ADA: TODO OK`).
+4. Dale Play.
+
+Si se regeneran los JSON con `FabricaRunner` o con la consola, cópialos con **ADA Fabrica → 1. Importar Resultados (JSON) desde el repo...**.
+
+**Controles:** escenario y método; Play/Pausa, Reiniciar y velocidad (x0.5 a x8); clic en el Gantt para saltar a ese tiempo; al pasar el mouse por una barra se ven los datos de la tarea; **Comparar con Aleatorio** da el % de mejora frente al mejor plan aleatorio y frente al promedio.
+
+**Decisiones de diseño**
+
+- El número de máquinas sale de `resumen_comparativo.json` (no del mayor `maquinaId`): la PD deja sin uso la máquina 1 en el escenario 2 y las máquinas 0 y 7 en el escenario 3, y igual se muestran.
+- Una máquina puede hacer varias etapas: se dibuja una línea de N máquinas cuyo color indica la etapa que procesa (gris = ociosa), igual que en el Gantt.
+- Un solo reloj (`VisualizadorFabrica`) para la animación y el cursor del Gantt, en t ∈ [0, makespan].
+- Energía acumulada: E(t) = Σ e_j · clamp((t − inicio_j)/(fin_j − inicio_j), 0, 1), en rojo desde el 90 % de E_max.
+- `escenario3_random.json` viene vacío (ninguna corrida factible): se muestra "sin solución factible".
+
+**Verificación:** 101 comprobaciones con los JSON reales (makespan, energía y costo de cada plan, máquinas sin uso, piezas en la salida al terminar, energía final = `energiaTotal`, Comparar = `resumen_comparativo.json`). El menú **ADA Fabrica → 4. Verificar escena abierta y datos reales** las repite dentro de Unity.
+
+**Build WebGL para GitHub Pages**
+
+1. **ADA Fabrica → WebGL: aplicar configuración para GitHub Pages (sin compresión)**. Pages no envía las cabeceras que necesita Brotli.
+2. **ADA Fabrica → WebGL: build a la carpeta docs/ (GitHub Pages)**. Crea `docs/` con `.nojekyll`.
+3. Sube `docs/` y en GitHub: **Settings → Pages → Branch: main, carpeta /docs**.
