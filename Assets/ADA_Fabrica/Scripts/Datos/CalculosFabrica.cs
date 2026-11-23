@@ -15,7 +15,7 @@ namespace Fabrica.UI
         public static readonly CultureInfo Ci = CultureInfo.InvariantCulture;
 
         /// <summary>Claves de archivo en el orden en que se muestran.</summary>
-        public static readonly string[] ClavesOrden = { "greedy", "dc", "pd", "random", "sa", "bb" };
+        public static readonly string[] ClavesOrden = { "greedy", "dc", "pd", "int1", "int2", "random", "sa", "bb" };
 
         public const string ClavePromedioAleatorio = "random_promedio";
 
@@ -29,6 +29,8 @@ namespace Fabrica.UI
                 case "greedy": return "Goloso";
                 case "dc": return "Divide y Vencerás";
                 case "pd": return "Programación Dinámica";
+                case "int1": return "Integrado 1: DyV→Goloso→PD";
+                case "int2": return "Integrado 2: PD reparte energía";
                 case "random": return "Aleatorio";
                 case ClavePromedioAleatorio: return "Aleatorio (promedio)";
                 case "sa": return "Recocido Simulado";
@@ -45,6 +47,8 @@ namespace Fabrica.UI
                 case "greedy": return "Goloso";
                 case "dc": return "DyV";
                 case "pd": return "PD";
+                case "int1": return "Integ. 1";
+                case "int2": return "Integ. 2";
                 case "random": return "Aleatorio";
                 case ClavePromedioAleatorio: return "Aleat. prom.";
                 case "sa": return "Recocido";
@@ -73,6 +77,8 @@ namespace Fabrica.UI
             if (string.IsNullOrEmpty(texto)) return null;
             string t = SinTildes(texto).ToLowerInvariant().Trim();
             string compacto = t.Replace(" ", "").Replace("_", "").Replace("-", "").Replace("(", "").Replace(")", "");
+            if (t.Contains("integrado 1")) return "int1";
+            if (t.Contains("integrado 2")) return "int2";
             if (compacto == "greedy" || compacto == "dc" || compacto == "pd" || compacto == "random" || compacto == "sa" || compacto == "bb")
                 return compacto;
 

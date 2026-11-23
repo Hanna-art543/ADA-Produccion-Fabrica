@@ -1,0 +1,175 @@
+{
+    "algoritmo": "Integrado 2: PD reparte E",
+    "escenario": "Pequeño",
+    "asignaciones": [
+        {
+            "jobId": 3,
+            "piezaId": 1,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 0.0,
+            "fin": 22.35294117647059,
+            "energia": 88.96470588235295
+        },
+        {
+            "jobId": 15,
+            "piezaId": 5,
+            "etapa": 0,
+            "maquinaId": 0,
+            "inicio": 0.0,
+            "fin": 4.761904761904762,
+            "energia": 29.57142857142857
+        },
+        {
+            "jobId": 16,
+            "piezaId": 5,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 4.761904761904762,
+            "fin": 24.761904761904764,
+            "energia": 43.0
+        },
+        {
+            "jobId": 6,
+            "piezaId": 2,
+            "etapa": 0,
+            "maquinaId": 0,
+            "inicio": 4.761904761904762,
+            "fin": 18.57142857142857,
+            "energia": 85.75714285714285
+        },
+        {
+            "jobId": 9,
+            "piezaId": 3,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 22.35294117647059,
+            "fin": 35.294117647058829,
+            "energia": 51.50588235294118
+        },
+        {
+            "jobId": 4,
+            "piezaId": 1,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 24.761904761904764,
+            "fin": 57.48917748917749,
+            "energia": 70.36363636363636
+        },
+        {
+            "jobId": 0,
+            "piezaId": 0,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 35.294117647058829,
+            "fin": 53.529411764705887,
+            "energia": 72.5764705882353
+        },
+        {
+            "jobId": 1,
+            "piezaId": 0,
+            "etapa": 1,
+            "maquinaId": 0,
+            "inicio": 53.529411764705887,
+            "fin": 58.767507002801128,
+            "energia": 32.52857142857143
+        },
+        {
+            "jobId": 12,
+            "piezaId": 4,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 53.529411764705887,
+            "fin": 76.47058823529412,
+            "energia": 91.30588235294118
+        },
+        {
+            "jobId": 5,
+            "piezaId": 1,
+            "etapa": 2,
+            "maquinaId": 1,
+            "inicio": 57.48917748917749,
+            "fin": 83.85281385281385,
+            "energia": 56.68181818181817
+        },
+        {
+            "jobId": 2,
+            "piezaId": 0,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 76.47058823529412,
+            "fin": 93.52941176470589,
+            "energia": 67.89411764705882
+        },
+        {
+            "jobId": 13,
+            "piezaId": 4,
+            "etapa": 1,
+            "maquinaId": 0,
+            "inicio": 76.47058823529412,
+            "fin": 85.51820728291317,
+            "energia": 56.18571428571428
+        },
+        {
+            "jobId": 10,
+            "piezaId": 3,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 83.85281385281385,
+            "fin": 120.21645021645021,
+            "energia": 78.18181818181817
+        },
+        {
+            "jobId": 14,
+            "piezaId": 4,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 93.52941176470589,
+            "fin": 99.41176470588235,
+            "energia": 23.411764705882356
+        },
+        {
+            "jobId": 17,
+            "piezaId": 5,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 99.41176470588235,
+            "fin": 116.47058823529412,
+            "energia": 67.89411764705882
+        },
+        {
+            "jobId": 11,
+            "piezaId": 3,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 120.21645021645021,
+            "fin": 134.33409727527374,
+            "energia": 56.188235294117649
+        },
+        {
+            "jobId": 7,
+            "piezaId": 2,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 120.21645021645021,
+            "fin": 132.94372294372296,
+            "energia": 27.36363636363636
+        },
+        {
+            "jobId": 8,
+            "piezaId": 2,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 134.33409727527374,
+            "fin": 144.33409727527374,
+            "energia": 39.8
+        }
+    ],
+    "makespan": 144.33409727527374,
+    "energiaTotal": 1039.1749427043544,
+    "energiaMax": 1047.87,
+    "costoTotal": 248.25159154570918,
+    "factible": true,
+    "tiempoEjecucionMs": 8.0151,
+    "notas": "PD repartió la energía entre etapas (17 valores de λ por etapa); usadas 3969 de 4000 unidades."
+}

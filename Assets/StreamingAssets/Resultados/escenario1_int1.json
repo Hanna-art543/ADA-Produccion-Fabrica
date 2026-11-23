@@ -1,0 +1,175 @@
+{
+    "algoritmo": "Integrado 1: DyV→Goloso→PD",
+    "escenario": "Pequeño",
+    "asignaciones": [
+        {
+            "jobId": 3,
+            "piezaId": 1,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 0.0,
+            "fin": 22.35294117647059,
+            "energia": 88.96470588235295
+        },
+        {
+            "jobId": 9,
+            "piezaId": 3,
+            "etapa": 0,
+            "maquinaId": 0,
+            "inicio": 0.0,
+            "fin": 10.476190476190477,
+            "energia": 65.05714285714287
+        },
+        {
+            "jobId": 10,
+            "piezaId": 3,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 10.476190476190477,
+            "fin": 46.839826839826837,
+            "energia": 78.18181818181817
+        },
+        {
+            "jobId": 15,
+            "piezaId": 5,
+            "etapa": 0,
+            "maquinaId": 0,
+            "inicio": 10.476190476190477,
+            "fin": 15.238095238095238,
+            "energia": 29.57142857142857
+        },
+        {
+            "jobId": 6,
+            "piezaId": 2,
+            "etapa": 0,
+            "maquinaId": 0,
+            "inicio": 15.238095238095238,
+            "fin": 29.047619047619045,
+            "energia": 85.75714285714285
+        },
+        {
+            "jobId": 0,
+            "piezaId": 0,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 22.35294117647059,
+            "fin": 40.58823529411765,
+            "energia": 72.5764705882353
+        },
+        {
+            "jobId": 7,
+            "piezaId": 2,
+            "etapa": 1,
+            "maquinaId": 0,
+            "inicio": 29.047619047619045,
+            "fin": 35.71428571428571,
+            "energia": 41.4
+        },
+        {
+            "jobId": 1,
+            "piezaId": 0,
+            "etapa": 1,
+            "maquinaId": 0,
+            "inicio": 40.58823529411765,
+            "fin": 45.82633053221289,
+            "energia": 32.52857142857143
+        },
+        {
+            "jobId": 12,
+            "piezaId": 4,
+            "etapa": 0,
+            "maquinaId": 2,
+            "inicio": 40.58823529411765,
+            "fin": 63.529411764705887,
+            "energia": 91.30588235294118
+        },
+        {
+            "jobId": 4,
+            "piezaId": 1,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 46.839826839826837,
+            "fin": 79.56709956709956,
+            "energia": 70.36363636363636
+        },
+        {
+            "jobId": 11,
+            "piezaId": 3,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 63.529411764705887,
+            "fin": 77.64705882352942,
+            "energia": 56.188235294117649
+        },
+        {
+            "jobId": 2,
+            "piezaId": 0,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 77.64705882352942,
+            "fin": 94.70588235294119,
+            "energia": 67.89411764705882
+        },
+        {
+            "jobId": 13,
+            "piezaId": 4,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 79.56709956709956,
+            "fin": 96.83982683982683,
+            "energia": 37.136363636363629
+        },
+        {
+            "jobId": 5,
+            "piezaId": 1,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 94.70588235294119,
+            "fin": 111.76470588235296,
+            "energia": 67.89411764705882
+        },
+        {
+            "jobId": 16,
+            "piezaId": 5,
+            "etapa": 1,
+            "maquinaId": 1,
+            "inicio": 96.83982683982683,
+            "fin": 116.83982683982683,
+            "energia": 43.0
+        },
+        {
+            "jobId": 14,
+            "piezaId": 4,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 111.76470588235296,
+            "fin": 117.64705882352942,
+            "energia": 23.411764705882356
+        },
+        {
+            "jobId": 17,
+            "piezaId": 5,
+            "etapa": 2,
+            "maquinaId": 1,
+            "inicio": 116.83982683982683,
+            "fin": 143.20346320346318,
+            "energia": 56.68181818181817
+        },
+        {
+            "jobId": 8,
+            "piezaId": 2,
+            "etapa": 2,
+            "maquinaId": 2,
+            "inicio": 117.64705882352942,
+            "fin": 127.64705882352942,
+            "energia": 39.8
+        }
+    ],
+    "makespan": 143.20346320346318,
+    "energiaTotal": 1047.713216195569,
+    "energiaMax": 1047.87,
+    "costoTotal": 247.97478482302007,
+    "factible": true,
+    "tiempoEjecucionMs": 14.144300000000002,
+    "notas": "Resultado final: semilla DyV. Costo semilla = 247.97."
+}

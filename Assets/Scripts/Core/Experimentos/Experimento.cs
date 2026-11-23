@@ -17,11 +17,12 @@ namespace Fabrica.Core
         public int iteracionesRecocido = 20000;
         public int resolucionPD = 4000;       // unidades discretas de energía en la PD
         public int maxPiezasBranchAndBound = 8;
+        public int lambdasIntegrado = 12;     // valores de λ por etapa en el Integrado 2
     }
 
     public class EntradaPlan
     {
-        public string clave; // sufijo del archivo: greedy, dc, pd, random, sa, bb
+        public string clave; // sufijo del archivo: greedy, dc, pd, int1, int2, random, sa, bb
         public PlanResult plan;
     }
 
@@ -48,10 +49,25 @@ namespace Fabrica.Core
                 var res = new ResultadoEscenario { escenario = esc };
                 ulong semillaEsc = (ulong)cfg.semilla * 7919UL + (ulong)esc.numero;
 
+                // --- Métodos por separado ---
                 PlanResult greedy = Goloso.Resolver(esc, cfg.iteracionesCalibracion);
                 res.planes.Add(new EntradaPlan { clave = "greedy", plan = greedy });
                 res.planes.Add(new EntradaPlan { clave = "dc", plan = DivideVenceras.Resolver(esc, cfg.iteracionesCalibracion) });
                 res.planes.Add(new EntradaPlan { clave = "pd", plan = ProgramacionDinamica.Resolver(esc, cfg.resolucionPD) });
+
+                // --- Métodos integrados (DyV + Goloso + PD) ---
+                res.planes.Add(new EntradaPlan
+                {
+                    clave = "int1",
+                    plan = PlanificadorIntegrado.Resolver(esc, cfg.iteracionesCalibracion, cfg.resolucionPD)
+                });
+                res.planes.Add(new EntradaPlan
+                {
+                    clave = "int2",
+                    plan = PlanificadorIntegrado.ResolverB(esc, cfg.resolucionPD, cfg.lambdasIntegrado)
+                });
+
+                // --- Línea base y extras ---
                 res.planes.Add(new EntradaPlan { clave = "random", plan = Aleatorio.Resolver(esc, cfg.corridasAleatorio, semillaEsc) });
                 res.planes.Add(new EntradaPlan
                 {
@@ -83,7 +99,7 @@ namespace Fabrica.Core
             {
                 semilla = semilla,
                 nota = "Gap = (costo - referencia) / referencia * 100. Referencia: óptimo de Branch & Bound "
-                     + "en el escenario pequeño; cota inferior (no alcanzable en general) en los demás."
+                + "en el escenario pequeño; cota inferior (no alcanzable en general) en los demás."
             };
             foreach (var res in resultados)
             {
@@ -115,8 +131,8 @@ namespace Fabrica.Core
 
                     // Aleatorio: mejor factible + promedio de factibles, o "sin solución factible"
                     r.notas.Add(string.Format(CultureInfo.InvariantCulture,
-                        "Aleatorio: {0:F1} % factibles ({1} de {2} corridas).",
-                        pa.porcentajeFactibles, pa.corridasFactibles, pa.corridas));
+                                              "Aleatorio: {0:F1} % factibles ({1} de {2} corridas).",
+                                              pa.porcentajeFactibles, pa.corridasFactibles, pa.corridas));
                     if (pa.hayFactible)
                     {
                         r.filas.Add(Fila(p.algoritmo, p.makespan, p.energiaTotal, p.costoTotal, p.tiempoEjecucionMs,
