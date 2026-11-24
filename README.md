@@ -1,8 +1,9 @@
 # ADA-Produccion-Fabrica
 
 Trabajo de Análisis y Diseño de Algoritmos: **Planificación de Producción en una Fábrica**.
-Se combinan **Divide y Vencerás**, **Goloso** y **Programación Dinámica**, y se comparan contra una
-asignación **aleatoria**, un **Branch & Bound** exacto (escenario pequeño) y un **Recocido Simulado**.
+Se resuelve con **Divide y Vencerás**, **Goloso** y **Programación Dinámica** por separado y con un
+**método integrado** que combina los tres en un solo algoritmo. Todos se comparan contra una asignación
+**aleatoria** y contra un **Branch & Bound** exacto (óptimo del escenario pequeño).
 
 ## 1. Problema
 
@@ -52,14 +53,14 @@ Assets/Scripts/Core/            C# puro (namespace Fabrica.Core), sin UnityEngin
     CalibracionLambda.cs        búsqueda binaria de λ (energía lo más cerca de E_max sin pasarse)
     DivideVenceras.cs           por etapas + división recursiva de máquinas
     ProgramacionDinamica.cs     dp[i][e] con energía discretizada
+    PlanificadorIntegrado.cs    Integrado: divide por etapas + menú goloso por etapa + PD sobre la energía
     Aleatorio.cs                1000 corridas: % factibles, promedio de factibles y mejor factible
     BranchAndBound.cs           exacto para n ≤ 8 piezas
-    RecocidoSimulado.cs         mover / intercambiar, penalización por E_max
   Experimentos/                 Experimento, Cotas, Comparador (tabla), ExportadorJson, ResumenComparativo
 Assets/Scripts/Runner/
   FabricaRunner.cs              MonoBehaviour: ejecuta, Debug.Log de la tabla, exporta JSON (JsonUtility)
 Tools/ConsoleTest/              Proyecto .NET 8 (C# 9) que compila Core y corre todo + verificaciones
-Resultados/                     escenarioK_{greedy,dc,pd,random,sa[,bb]}.json + resumen_comparativo.json
+Resultados/                     escenarioK_{greedy,dc,pd,int,random[,bb]}.json + resumen_comparativo.json
 Assets/ADA_Fabrica/             Visualizador final en Unity: escena 3D + UI, Gantt y comparación (ver sección 8)
 ```
 
@@ -84,6 +85,7 @@ Imprime la tabla, exporta los JSON a `Resultados/` y corre las verificaciones:
 
 - B&B coincide con una fuerza bruta de 2¹⁸ combinaciones.
 - PD respeta `E_max`.
+- El Integrado es factible y su costo es ≤ al mejor de Goloso, D&V y PD en los 3 escenarios (y se reporta su gap frente a B&B).
 - Ningún algoritmo baja del óptimo ni de la cota.
 - Se cumplen las precedencias y no hay solapes en las máquinas.
 
@@ -155,6 +157,37 @@ El Goloso y D&V usan **un solo λ** para todas las tareas:
 - Con ese peso, muchas tareas se van a máquinas lentas aunque no haga falta.
 - La PD decide tarea por tarea cuánta energía usar y redistribuye el presupuesto donde más reduce el makespan.
 
+### Integrado (D&V + Goloso + PD)
+
+Es el método que pide el enunciado: **un solo algoritmo** que usa los tres paradigmas, cada uno en un paso.
+Está en `Assets/Scripts/Core/Algoritmos/PlanificadorIntegrado.cs` (clave `int`).
+
+1. **Divide (D&V):** el problema se parte en 3 subproblemas, uno por etapa (Corte, Ensamblaje, Empaquetado). Cada subproblema decide la máquina de las `P` tareas de esa etapa, solo entre las máquinas capaces. Las etapas van en orden: los fines de una etapa son los tiempos de liberación de la siguiente.
+2. **Goloso:** para cada etapa se arma un **menú de opciones** (asignaciones parciales de esa etapa):
+   - 17 pasadas golosas con distintos λ: `0`, `10⁶`, `λ_cal·{0.5, 1, 2}` (λ_cal = el λ calibrado del Goloso) y 12 valores en escala logarítmica de `0.01` a `1000`. Cada pasada toma las piezas por orden de liberación (desempate LPT) y manda cada tarea a la máquina que minimiza `fin + λ·energía`.
+   - La parte de esa etapa de los planes completos **Goloso**, **D&V** y **PD**.
+   - Se eliminan las opciones repetidas (misma máquina para cada pieza).
+3. **PD (mochila de elección múltiple sobre la energía):** `dp[s][e]` = menor costo estimado `α·makespan + β·energía` tras las etapas `0..s` gastando exactamente `e` unidades de energía discreta (`R = 4000`, redondeo hacia arriba, así que nunca se pasa de `E_max`). Cada celda guarda el estado del mejor camino (máquinas libres y fin de cada pieza), y las opciones golosas de la etapa siguiente se calculan desde ese estado.
+   - Como el makespan no es aditivo, la PD solo **estima**. Por eso se reconstruye la mejor combinación de **cada nivel de energía final** (hasta 200), y cada una se evalúa con el `Simulador` real, el mismo de todos los métodos.
+   - Los **3 planes completos** Goloso, D&V y PD también se evalúan. Se elige la **factible de menor costo**.
+
+**Por qué nunca es peor que los métodos solos:** los planes de Goloso, D&V y PD siempre están entre los candidatos, y todos se miden con el mismo `Simular()`. El elegido es el de menor costo, así que `costo(Integrado) ≤ min(Goloso, D&V, PD)`. ConsoleTest lo verifica en los 3 escenarios.
+
+**Complejidad** (`S = 3` etapas, `L ≈ 20` opciones por etapa, `K ≤ 203` candidatas):
+
+- Tiempo: `O(k·(n log n + n·m) + S·R·(P log P + L·P·m) + K·(R + n·P))`. Son la calibración de λ, la PD (R estados por etapa × L opciones × una pasada golosa) y la evaluación de las candidatas con `Simular()`. Es pseudo-polinomial en `R`.
+- Espacio: `O(S·R·P + R·(m + P))`, por las decisiones por etapa y dos capas de estados.
+
+El campo `notas` del JSON guarda las opciones por etapa, las combinaciones evaluadas y de dónde salió la opción elegida en cada etapa:
+
+| Escenario | Corte            | Ensamblaje       | Empaquetado | Combinaciones evaluadas |
+|-----------|------------------|------------------|-------------|------------------------:|
+| Pequeño   | goloso λ = 3.687 | parte de D&V     | goloso λ = 0 | 201 |
+| Mediano   | parte de PD      | parte de PD      | goloso λ = 0.6579 | 203 |
+| Grande    | goloso λ = 43.29 | goloso λ = 5.337 | goloso λ = 10.2 | 202 |
+
+En los tres escenarios el plan elegido es una **combinación nueva**: no es ninguno de los planes Goloso, D&V o PD completos.
+
 ### Aleatorio
 
 Cada tarea va a una máquina válida al azar. Se hacen 1000 corridas con semilla fija y se reporta:
@@ -176,17 +209,9 @@ Búsqueda en profundidad sobre la máquina de cada tarea. La solución del golos
 
 Se poda si `α·LB_mk + β·LB_e ≥ mejor` o si `LB_e > E_max`. Cada hoja se evalúa con `Simular()`. Solo se usa con 8 piezas o menos, y su resultado es el óptimo de referencia del escenario pequeño, comprobado contra la fuerza bruta.
 
-### Recocido Simulado (método extra)
-
-- **Punto de partida:** la solución del goloso.
-- **Vecinos:** mover una tarea a otra máquina válida, o intercambiar las máquinas de dos tareas.
-- **Objetivo:** `costo + ρ·max(0, energía − E_max)`, con `ρ = 10·costo₀/E_max`.
-- **Enfriamiento:** geométrico de `0.05·costo₀` a `10⁻⁴·costo₀`, en 20 000 iteraciones.
-- Devuelve la mejor solución **factible**.
-
 ## 5. Complejidades
 
-`n` = tareas (3 × piezas), `m` = máquinas, `P` = piezas, `k` = iteraciones de la búsqueda binaria de λ (30), `R` = resolución de energía de la PD, `I` = iteraciones del recocido y `K` = corridas del aleatorio. Una llamada a `Simular()` cuesta `O(n·P)`.
+`n` = tareas (3 × piezas), `m` = máquinas, `P` = piezas, `k` = iteraciones de la búsqueda binaria de λ (30), `R` = resolución de energía de la PD, `L` = opciones por etapa del Integrado, `C` = combinaciones que el Integrado evalúa y `K` = corridas del aleatorio. Una llamada a `Simular()` cuesta `O(n·P)`.
 
 | Algoritmo           | Tiempo                                | Espacio      | Comentario |
 |---------------------|---------------------------------------|--------------|------------|
@@ -194,42 +219,47 @@ Se poda si `α·LB_mk + β·LB_e ≥ mejor` o si `LB_e > E_max`. Cada hoja se ev
 | Goloso (LPT)        | O(k·(n log n + n·m))                  | O(n + m)     | k pasadas golosas (orden LPT + evaluar m máquinas por tarea), una por cada λ de la búsqueda binaria |
 | Divide y Vencerás   | O(k·(n log n + n·m))                  | O(n + m)     | Cada pasada: T(n, m) = T(n₁, m/2) + T(n₂, m/2) + O(n + m), o sea profundidad log m con O(n + m) por nivel, más el orden O(n log n). Se repite k veces por la calibración de λ |
 | Prog. Dinámica      | O(n·R·m²)                             | O(n·R + R·m) | n·R estados × m transiciones × copia del vector de m cargas. Pseudo-polinomial |
+| Integrado           | O(k·(n log n + n·m) + S·R·(P log P + L·P·m) + C·(R + n·P)) | O(S·R·P + R·(m + P)) | Calibración de λ + PD sobre 3 etapas con L opciones golosas + C simulaciones. Pseudo-polinomial |
 | Aleatorio           | O(K·n·P)                              | O(n)         | K simulaciones |
 | Branch & Bound      | O(mⁿ·n·P) peor caso                   | O(n + m)     | En la práctica, la poda explora muy pocos nodos (ver `notas` en el JSON) |
-| Recocido Simulado   | O(I·n·P)                              | O(n)         | Una simulación por vecino |
 
 ## 6. Resultados (semilla 2024)
 
 ```
 === Escenario 1: Pequeño (6 piezas, 18 tareas, 3 máquinas) | E_max = 1047.87 | α = 1 β = 0.1 ===
 Referencia: óptimo de Branch & Bound, costo = 239.22
-Algoritmo                   |  Makespan |   Energía |     Costo |  Gap vs ópt (%) | Factible
-Goloso (LPT)                |    167.81 |   1040.45 |    271.85 |           13.64 | sí
-Divide y Vencerás           |    143.20 |   1047.71 |    247.97 |            3.66 | sí
-Prog. Dinámica              |    156.58 |   1042.46 |    260.82 |            9.03 | sí
-Aleatorio (mejor factible)  |    147.65 |   1037.80 |    251.43 |            5.10 | sí
-Aleatorio (prom. factibles) |    199.11 |   1027.08 |    301.82 |           26.17 | sí
-Recocido Simulado           |    135.67 |   1046.64 |    240.33 |            0.47 | sí
-Branch & Bound              |    134.76 |   1044.56 |    239.22 |            0.00 | sí
+Algoritmo                      |  Makespan |   Energía |     Costo |  Gap vs ópt (%) | Tiempo (ms) | Factible
+-------------------------------------------------------------------------------------------------------------
+Goloso (LPT)                   |    167.81 |   1040.45 |    271.85 |           13.64 |       2.326 | sí
+Divide y Vencerás              |    143.20 |   1047.71 |    247.97 |            3.66 |       3.654 | sí
+Prog. Dinámica                 |    156.58 |   1042.46 |    260.82 |            9.03 |      12.143 | sí
+Integrado (D&V + Goloso + PD)  |    143.37 |   1034.16 |    246.79 |            3.16 |      59.672 | sí
+Aleatorio (mejor factible)     |    147.65 |   1037.80 |    251.43 |            5.10 |      11.904 | sí
+Aleatorio (prom. factibles)    |    199.11 |   1027.08 |    301.82 |           26.17 |      11.904 | sí
+Branch & Bound                 |    134.76 |   1044.56 |    239.22 |            0.00 |      16.049 | sí
 Aleatorio: 13.2 % factibles (132 de 1000 corridas).
 
-=== Escenario 2: Mediano (20 piezas, 60 tareas, 5 máquinas) | E_max = 4470.64 ===
+=== Escenario 2: Mediano (20 piezas, 60 tareas, 5 máquinas) | E_max = 4470.64 | α = 1 β = 0.1 ===
 Referencia: COTA INFERIOR (no es el óptimo), costo ≥ 544.61
-Goloso (LPT)                |    272.26 |   4463.77 |    718.64 |           31.96 | sí
-Divide y Vencerás           |    227.06 |   4468.24 |    673.89 |           23.74 | sí
-Prog. Dinámica              |    202.23 |   4436.04 |    645.83 |           18.59 | sí
-Aleatorio (mejor factible)  |    245.29 |   4452.92 |    690.59 |           26.80 | sí
-Aleatorio (prom. factibles) |    311.78 |   4458.65 |    757.65 |           39.12 | sí
-Recocido Simulado           |    168.82 |   4470.51 |    615.87 |           13.09 | sí
+Algoritmo                      |  Makespan |   Energía |     Costo | Gap vs cota (%) | Tiempo (ms) | Factible
+-------------------------------------------------------------------------------------------------------------
+Goloso (LPT)                   |    272.26 |   4463.77 |    718.64 |           31.96 |       0.389 | sí
+Divide y Vencerás              |    227.06 |   4468.24 |    673.89 |           23.74 |       0.796 | sí
+Prog. Dinámica                 |    202.23 |   4436.04 |    645.83 |           18.59 |       5.987 | sí
+Integrado (D&V + Goloso + PD)  |    188.55 |   4457.95 |    634.35 |           16.48 |      26.490 | sí
+Aleatorio (mejor factible)     |    245.29 |   4452.92 |    690.59 |           26.80 |       7.692 | sí
+Aleatorio (prom. factibles)    |    311.78 |   4458.65 |    757.65 |           39.12 |       7.692 | sí
 Aleatorio: 2.3 % factibles (23 de 1000 corridas).
 
-=== Escenario 3: Grande (50 piezas, 150 tareas, 8 máquinas) | E_max = 9176.58 ===
+=== Escenario 3: Grande (50 piezas, 150 tareas, 8 máquinas) | E_max = 9176.58 | α = 1 β = 0.1 ===
 Referencia: COTA INFERIOR (no es el óptimo), costo ≥ 1037.41
-Goloso (LPT)                |    902.45 |   9162.46 |   1818.70 |           75.31 | sí
-Divide y Vencerás           |   1031.05 |   9148.41 |   1945.90 |           87.57 | sí
-Prog. Dinámica              |    806.85 |   8995.12 |   1706.37 |           64.48 | sí
-Aleatorio                   | sin solución factible
-Recocido Simulado           |    714.55 |   9164.07 |   1630.95 |           57.21 | sí
+Algoritmo                      |  Makespan |   Energía |     Costo | Gap vs cota (%) | Tiempo (ms) | Factible
+-------------------------------------------------------------------------------------------------------------
+Goloso (LPT)                   |    902.45 |   9162.46 |   1818.70 |           75.31 |       2.723 | sí
+Divide y Vencerás              |   1031.05 |   9148.41 |   1945.90 |           87.57 |       2.377 | sí
+Prog. Dinámica                 |    806.85 |   8995.12 |   1706.37 |           64.48 |      25.045 | sí
+Integrado (D&V + Goloso + PD)  |    766.50 |   9123.18 |   1678.82 |           61.83 |     130.383 | sí
+Aleatorio                      | sin solución factible                               |      51.336 | -
 Aleatorio: 0.0 % factibles (0 de 1000 corridas).
 ```
 
@@ -238,6 +268,8 @@ Notas sobre la tabla:
 - En los escenarios 2 y 3, el gap se mide contra una **cota inferior** que no tiene por qué ser alcanzable. Por eso el gap real es menor que el reportado.
 - El Goloso supera al promedio de las corridas aleatorias factibles en los escenarios donde ese promedio existe (271.85 < 301.82 y 718.64 < 757.65).
 - En el escenario grande, al azar no se encuentra ningún plan que respete `E_max`. El Goloso calibrado sí lo encuentra.
+- El **Integrado** es el mejor de los métodos constructivos en los 3 escenarios: 246.79 < 247.97 (D&V), 634.35 < 645.83 (PD) y 1678.82 < 1706.37 (PD). En el escenario pequeño queda a 3.16 % del óptimo de B&B.
+- Su tiempo incluye el de Goloso, D&V y PD, porque los usa como entrada.
 
 Los tiempos de ejecución (ms) están en la salida de consola y en `Resultados/resumen_comparativo.json`.
 
@@ -305,6 +337,7 @@ Si se regeneran los JSON con `FabricaRunner` o con la consola, cópialos con **A
 - Un solo reloj (`VisualizadorFabrica`) para la animación y el cursor del Gantt, en t ∈ [0, makespan].
 - Energía acumulada: E(t) = Σ e_j · clamp((t − inicio_j)/(fin_j − inicio_j), 0, 1), en rojo desde el 90 % de E_max.
 - `escenario3_random.json` viene vacío (ninguna corrida factible): se muestra "sin solución factible".
+- Claves de los planes, en el orden de la UI: `greedy` (Goloso), `dc` (D&V), `pd` (PD), `int` (Integrado (D&V + Goloso + PD), corto "Integrado"), `random` (Aleatorio) y `bb` (B&B, solo escenario 1). Son 16 planes: 5 por escenario + B&B. `CalculosFabrica.ClaveDeAlgoritmo` detecta "integr"/"hibrid" antes que "golos", porque el nombre del Integrado contiene "Goloso".
 
 **Verificación:** 101 comprobaciones con los JSON reales (makespan, energía y costo de cada plan, máquinas sin uso, piezas en la salida al terminar, energía final = `energiaTotal`, Comparar = `resumen_comparativo.json`). El menú **ADA Fabrica → 4. Verificar escena abierta y datos reales** las repite dentro de Unity.
 

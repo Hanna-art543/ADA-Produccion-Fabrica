@@ -64,9 +64,24 @@ namespace Fabrica.ConsoleTest
                 ok &= Check(pd.energiaTotal <= esc.energiaMax + 1e-9,
                             string.Format("{0} / PD: energía {1:F2} ≤ E_max {2:F2}", esc.nombre, pd.energiaTotal, esc.energiaMax));
 
+                // Integrado (D&V + Goloso + PD): factible y nunca peor que los métodos por separado
+                PlanResult integ = Buscar(res, "int");
+                PlanResult go = Buscar(res, "greedy"), dv = Buscar(res, "dc");
+                double minSolos = Math.Min(go.costoTotal, Math.Min(dv.costoTotal, pd.costoTotal));
+                ok &= Check(integ.factible && integ.energiaTotal <= esc.energiaMax + 1e-9 && PrecedenciasOk(esc, integ),
+                            string.Format("{0} / Integrado: factible (energía {1:F2} ≤ E_max {2:F2}), precedencias y sin solapes",
+                                          esc.nombre, integ.energiaTotal, esc.energiaMax));
+                ok &= Check(integ.costoTotal <= minSolos + 1e-9,
+                            string.Format("{0} / Integrado: costo {1:F2} ≤ min(Goloso {2:F2}, D&V {3:F2}, PD {4:F2}) = {5:F2}",
+                                          esc.nombre, integ.costoTotal, go.costoTotal, dv.costoTotal, pd.costoTotal, minSolos));
+
                 if (res.referenciaEsOptimo)
                 {
                     PlanResult bb = Buscar(res, "bb");
+                    double gapInt = (integ.costoTotal - bb.costoTotal) / bb.costoTotal * 100;
+                    ok &= Check(gapInt >= -1e-9,
+                                string.Format("{0} / Integrado vs B&B: {1:F2} vs {2:F2} (gap = {3:F2} %)",
+                                              esc.nombre, integ.costoTotal, bb.costoTotal, gapInt));
                     double gapBB = (bb.costoTotal - res.costoReferencia) / res.costoReferencia * 100;
                     ok &= Check(Math.Abs(gapBB) < 1e-9, esc.nombre + " / B&B: gap = " + gapBB.ToString("F2") + " %");
 

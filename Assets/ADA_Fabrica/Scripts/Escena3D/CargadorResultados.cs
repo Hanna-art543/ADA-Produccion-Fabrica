@@ -12,7 +12,7 @@ namespace Fabrica.Escena
     /// </summary>
     public static class CargadorResultados
     {
-        public static readonly string[] Claves = { "greedy", "dc", "pd", "random", "sa", "bb" };
+        public static readonly string[] Claves = { "greedy", "dc", "pd", "int", "random", "bb" };
 
         /// <summary>escenario{K}_{clave}.json, o null si no existe.</summary>
         public static PlanResult CargarPlan(int escenario, string clave)

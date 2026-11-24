@@ -170,6 +170,6 @@
   "energiaMax": 1047.87,
   "costoTotal": 239.21803921568625,
   "factible": true,
-  "tiempoEjecucionMs": 4.7363,
+  "tiempoEjecucionMs": 16.0486,
   "notas": "Nodos explorados: 18904, hojas evaluadas: 1026."
 }

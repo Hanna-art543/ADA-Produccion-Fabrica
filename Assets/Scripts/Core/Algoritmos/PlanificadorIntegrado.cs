@@ -2,242 +2,169 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 
 namespace Fabrica.Core
 {
-    // Dos pipelines que integran Divide y Vencerás + Goloso + Programación Dinámica.
+    // ===========================================================================================
+    // INTEGRADO (D&V + Goloso + PD): un solo algoritmo que combina los tres paradigmas.
+    //
+    //  1) DIVIDE (Divide y Vencerás): el problema se parte en 3 subproblemas, uno por etapa
+    //     (Corte → Ensamblaje → Empaquetado). Cada subproblema decide la máquina de las P tareas
+    //     de esa etapa, solo entre las máquinas capaces de hacerla. Las etapas se resuelven en orden:
+    //     los fines de una etapa son los tiempos de liberación de la siguiente.
+    //
+    //  2) GOLOSO: para cada etapa se arma un menú de opciones (asignaciones parciales de esa etapa):
+    //       - L_λ pasadas golosas (piezas por orden de liberación, desempate LPT; cada tarea a la máquina
+    //         que minimiza fin + λ·energía) con λ = 0, 10^6, λ_cal·{0.5, 1, 2} y una escala logarítmica
+    //         (λ_cal = λ calibrado del Goloso global);
+    //       - la parte de esa etapa de los planes completos Goloso, D&V y PD.
+    //     Las opciones repetidas (misma máquina para cada pieza) se eliminan.
+    //
+    //  3) PD (mochila de elección múltiple sobre la energía):
+    //       dp[s][e] = menor costo estimado α·makespan + β·energía tras las etapas 0..s gastando
+    //       exactamente e unidades de energía discreta (E_max ↦ R unidades, redondeo hacia arriba,
+    //       así Σ ê ≤ R ⇒ energía ≤ E_max). Cada celda guarda el estado (máquinas libres, fin de cada
+    //       pieza) del mejor camino, y las opciones del Goloso se evalúan a partir de ese estado.
+    //     Como el makespan no es aditivo, la PD da una estimación. Por eso se reconstruye la mejor
+    //     combinación de CADA nivel de energía final (hasta K), se evalúa cada una con el Simulador
+    //     real (el mismo de todos los métodos) junto con los 3 planes completos Goloso, D&V y PD,
+    //     y se elige la factible de menor costo.
+    //
+    //  Garantía: los planes Goloso, D&V y PD siempre son candidatos y todos se evalúan con el mismo
+    //  Simulador, así que costo(Integrado) ≤ min(costo Goloso, D&V, PD).
+    //
+    //  Complejidad (S = 3 etapas, P piezas, m máquinas, n = S·P tareas, L opciones por etapa,
+    //  R = resolución de energía, K combinaciones evaluadas, k = iteraciones de la calibración de λ):
+    //    Tiempo:  O(k·(n log n + n·m))          calibración de λ_cal (Goloso)
+    //           + O(S·R·(P log P + L·P·m))      PD: R estados por etapa × L opciones × pasada golosa
+    //           + O(K·(R + S·P + n·P))          ordenar/reconstruir + Simular() de cada candidata
+    //    Espacio: O(S·R·P + R·(m + P))          decisiones por etapa + dos capas de estados
+    // ===========================================================================================
     public static class PlanificadorIntegrado
     {
-        public const string NombreA = "Integrado 1: DyV→Goloso→PD";
-        public const string NombreB = "Integrado 2: PD reparte E";
+        public const string Nombre = "Integrado (D&V + Goloso + PD)";
 
-        // ===================================================================
-        // BLOQUE 1 · INTEGRADO 1: DyV (con Goloso) -> PD
-        //   1) DyV y Goloso, cada uno con su λ calibrado, generan soluciones semilla.
-        //   2) Se elige la mejor semilla.
-        //   3) La PD parte de esa semilla y solo explora planes que no la empeoren.
-        // ===================================================================
-        public static PlanResult Resolver(Escenario esc, int iterCalib, int resolucionPD)
+        public static PlanResult Resolver(Escenario esc, PlanResult goloso, PlanResult dyv, PlanResult pd,
+                                          int resolucionPD, int numLambdas, int maxCombinaciones, int iterCalib)
         {
             var sw = Stopwatch.StartNew();
-            int[] sol = Pipeline1(esc, iterCalib, resolucionPD, out string nota);
-            sw.Stop();
-            var r = Simulador.Simular(esc, sol, NombreA);
-            r.tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds;
-            r.notas = nota;
-            return r;
-        }
-
-        private static int[] Pipeline1(Escenario esc, int iterCalib, int resolucionPD, out string nota)
-        {
-            // Pasos 1 y 2: semillas de DyV y de Goloso, y nos quedamos con la mejor
-            var calDv = CalibracionLambda.Calibrar(esc, lam => DivideVenceras.Asignar(esc, lam), iterCalib);
-            var calGo = CalibracionLambda.Calibrar(esc, lam => Goloso.Asignar(esc, lam), iterCalib);
-            var rDv = Simulador.Simular(esc, calDv.asignacion, "semilla DyV");
-            var rGo = Simulador.Simular(esc, calGo.asignacion, "semilla Goloso");
-
-            bool usaDv = EsMejor(rDv, rGo);
-            int[] semilla = usaDv ? calDv.asignacion : calGo.asignacion;
-            var rSem = usaDv ? rDv : rGo;
-
-            // Paso 3: la PD intenta mejorar la semilla (si no puede, se queda la semilla)
-            int[] refinada = RefinarPD(esc, rSem.costoTotal, resolucionPD);
-            int[] final = semilla;
-            string origen = usaDv ? "semilla DyV" : "semilla Goloso";
-            if (refinada != null)
-            {
-                var rPd = Simulador.Simular(esc, refinada, "PD refinada");
-                if (EsMejor(rPd, rSem)) { final = refinada; origen = "PD mejoró la semilla"; }
-            }
-            nota = string.Format(CultureInfo.InvariantCulture,
-                                 "Resultado final: {0}. Costo semilla = {1:F2}.", origen, rSem.costoTotal);
-            return final;
-        }
-
-        // Un plan factible siempre gana a uno infactible; si empatan, gana el de menor costo
-        private static bool EsMejor(PlanResult a, PlanResult b)
-        {
-            if (a.factible != b.factible) return a.factible;
-            return a.costoTotal < b.costoTotal - 1e-9;
-        }
-
-        // ===================================================================
-        // BLOQUE 2 · PD que refina la semilla (usada por el Integrado 1)
-        //   dp[t][e] = menor costo tras t tareas usando e unidades de energía.
-        //   Se poda todo estado cuyo costo ya supera la semilla (+5 %).
-        // ===================================================================
-        private static int[] RefinarPD(Escenario esc, double costoSemilla, int E)
-        {
-            int n = esc.NumTareas, M = esc.NumMaquinas;
-            int[] orden = esc.OrdenTareas();
+            int S = Etapas.Cantidad, P = esc.numPiezas, M = esc.NumMaquinas, n = esc.NumTareas;
+            int E = resolucionPD;
             double escala = E / esc.energiaMax;
-            double cota = costoSemilla * 1.05 + 1e-9;
+            int[] rango = new int[P];
+            for (int p = 0; p < P; p++) rango[p] = esc.RangoPieza(p);
 
-            // Energía discretizada (redondeo hacia arriba: nunca excede E_max)
-            int[][] ed = new int[n][];
-            for (int t = 0; t < n; t++)
-            {
-                ed[t] = new int[M];
-                foreach (int k in esc.Validas(orden[t]))
-                    ed[t][k] = (int)Math.Ceiling(esc.Energia(orden[t], k) * escala - 1e-9);
-            }
-
-            sbyte[][] decision = new sbyte[n][];
-            var actual = new Capa(E, M);
-            var sig = new Capa(E, M);
-            actual.Limpiar();
-            actual.costo[0] = 0;
-
-            for (int t = 0; t < n; t++)
-            {
-                int j = orden[t];
-                bool primera = esc.jobs[j].etapa == Etapa.Corte;
-                decision[t] = new sbyte[E + 1];
-                sig.Limpiar();
-
-                for (int e = 0; e <= E; e++)
-                {
-                    if (double.IsPositiveInfinity(actual.costo[e])) continue;
-                    double listo = primera ? 0 : actual.listo[e];
-                    double[] libre = actual.libre[e];
-
-                    foreach (int k in esc.Validas(j))
-                    {
-                        int e2 = e + ed[t][k];
-                        if (e2 > E) continue;
-                        double fin = Math.Max(listo, libre[k]) + esc.Tiempo(j, k);
-                        double mk = Math.Max(actual.makespan[e], fin);
-                        double en = actual.energia[e] + esc.Energia(j, k);
-                        double c = esc.Costo(mk, en);
-                        if (c > cota) continue; // poda por la semilla
-                        if (c < sig.costo[e2] - 1e-12)
-                        {
-                            sig.costo[e2] = c;
-                            sig.makespan[e2] = mk;
-                            sig.energia[e2] = en;
-                            sig.listo[e2] = fin;
-                            Array.Copy(libre, sig.libre[e2], M);
-                            sig.libre[e2][k] = fin;
-                            decision[t][e2] = (sbyte)k;
-                        }
-                    }
-                }
-                var tmp = actual; actual = sig; sig = tmp;
-            }
-
-            // Mejor estado final y reconstrucción hacia atrás
-            int mejorE = -1;
-            for (int e = 0; e <= E; e++)
-                if (!double.IsPositiveInfinity(actual.costo[e]) &&
-                    (mejorE < 0 || actual.costo[e] < actual.costo[mejorE]))
-                    mejorE = e;
-                if (mejorE < 0) return null;
-
-                int[] maq = new int[n];
-            int ee = mejorE;
-            for (int t = n - 1; t >= 0; t--)
-            {
-                int k = decision[t][ee];
-                maq[orden[t]] = k;
-                ee -= ed[t][k];
-            }
-            return maq;
-        }
-
-        // ===================================================================
-        // BLOQUE 3 · INTEGRADO 2: etapas (DyV) + Goloso con varios λ + PD reparte la energía
-        //   Si no logra un plan factible, usa el resultado del Integrado 1 como respaldo.
-        // ===================================================================
-        public static PlanResult ResolverB(Escenario esc, int resolucionPD, int numLambdas)
-        {
-            var sw = Stopwatch.StartNew();
-            int[] sol = EtapasPD(esc, resolucionPD, Math.Max(3, numLambdas), 30, out string nota);
-            PlanResult r = sol != null ? Simulador.Simular(esc, sol, NombreB) : null;
-            if (r == null || !r.factible)
-            {
-                sol = Pipeline1(esc, 30, resolucionPD, out string nota1);
-                r = Simulador.Simular(esc, sol, NombreB);
-                nota = "Sin plan factible por etapas; se usa el resultado del Integrado 1. " + nota1;
-            }
-            sw.Stop();
-            r.tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds;
-            r.notas = nota;
-            return r;
-        }
-
-        private static int[] EtapasPD(Escenario esc, int E, int numLambdas, int iterCalib, out string nota)
-        {
-            int P = esc.numPiezas, M = esc.NumMaquinas, S = Etapas.Cantidad;
-            double escala = E / esc.energiaMax;
-
-            // --- Rejilla de λ para el Goloso de cada etapa ---
-            // 0 = solo rapidez; 1e6 = casi mínima energía; alrededor del λ calibrado; y una escala logarítmica
+            // ---------------- 2) Menú del Goloso: λ + partes de los planes completos ----------------
             var calGo = CalibracionLambda.Calibrar(esc, lam => Goloso.Asignar(esc, lam), iterCalib);
             var listaL = new List<double> { 0, 1e6, calGo.lambda * 0.5, calGo.lambda, calGo.lambda * 2 };
             for (int i = 0; i < numLambdas; i++)
                 listaL.Add(0.01 * Math.Pow(1e5, (double)i / Math.Max(1, numLambdas - 1)));
-            double[] lambdas = listaL.ToArray();
+            var lambdas = new List<double>();
+            foreach (double l in listaL)
+                if (!double.IsInfinity(l) && !double.IsNaN(l) && !lambdas.Contains(l)) lambdas.Add(l);
 
-            var act = new CapaEtapas(E, M, P);
-            var sig = new CapaEtapas(E, M, P);
+            var completos = new[] { goloso, dyv, pd };
+            var nombresCompletos = new[] { "Goloso", "D&V", "PD" };
+            // fijas[s][f] = máquina de cada pieza en la etapa s según el plan completo f
+            var fijas = new int[S][][];
+            for (int s = 0; s < S; s++)
+            {
+                fijas[s] = new int[completos.Length][];
+                for (int f = 0; f < completos.Length; f++)
+                {
+                    int[] maqF = completos[f].MaquinaPorTarea();
+                    fijas[s][f] = new int[P];
+                    for (int p = 0; p < P; p++) fijas[s][f][p] = maqF[Escenario.IdTarea(p, s)];
+                }
+            }
+
+            // Etiquetas de las opciones: primero los λ, luego las 3 partes fijas
+            int L = lambdas.Count + completos.Length;
+            var etiquetas = new string[L];
+            for (int o = 0; o < lambdas.Count; o++)
+                etiquetas[o] = "λ=" + lambdas[o].ToString("G4", CultureInfo.InvariantCulture);
+            for (int f = 0; f < completos.Length; f++) etiquetas[lambdas.Count + f] = "parte de " + nombresCompletos[f];
+
+            // ---------------- 3) PD sobre las etapas: dp[s][e] ----------------
+            var act = new Capa(E, M, P);
+            var sig = new Capa(E, M, P);
             act.Limpiar();
             act.costo[0] = 0;
 
-            int[][][] maqEtapa = new int[S][][]; // [etapa][energía] -> máquina por pieza
-            int[][] previo = new int[S][];       // energía antes de la etapa (para reconstruir)
+            var maqEtapa = new int[S][][];  // [etapa][energía final de la etapa] -> máquina por pieza
+            var previo = new int[S][];      // energía acumulada antes de la etapa
+            var fuente = new int[S][];      // índice de la opción elegida (etiqueta)
+            var distintasPorEtapa = new double[S];
 
-            // --- PD sobre las etapas: dp[s][e] ---
+            var piezas = new int[P];
+            var vistas = new List<int[]>(L);
             for (int s = 0; s < S; s++)
             {
                 maqEtapa[s] = new int[E + 1][];
                 previo[s] = new int[E + 1];
+                fuente[s] = new int[E + 1];
                 sig.Limpiar();
+                long estados = 0, distintas = 0;
 
                 for (int e = 0; e <= E; e++)
                 {
                     if (double.IsPositiveInfinity(act.costo[e])) continue;
-
-                    // Piezas en orden de liberación (fin de la etapa anterior)
-                    var piezas = new List<int>(P);
-                    for (int p = 0; p < P; p++) piezas.Add(p);
+                    estados++;
                     double[] finPrev = act.finPieza[e];
-                    piezas.Sort((a, b) =>
+                    for (int p = 0; p < P; p++) piezas[p] = p;
+                    // Piezas por orden de liberación (fin de la etapa anterior); desempate LPT
+                    Array.Sort(piezas, (a, b) =>
                     {
                         int c = finPrev[a].CompareTo(finPrev[b]);
-                        return c != 0 ? c : esc.RangoPieza(a).CompareTo(esc.RangoPieza(b));
+                        return c != 0 ? c : rango[a].CompareTo(rango[b]);
                     });
 
-                    // Cada λ produce un plan candidato de esta etapa (Goloso)
-                    foreach (double lam in lambdas)
+                    vistas.Clear();
+                    for (int o = 0; o < L; o++)
                     {
-                        double[] libre = (double[])act.libre[e].Clone();
-                        double[] fin = (double[])act.finPieza[e].Clone();
                         int[] maqs = new int[P];
+                        double[] libre = (double[])act.libre[e].Clone();
+                        double[] fin = (double[])finPrev.Clone();
                         double enEtapa = 0, mk = act.makespan[e];
+                        bool esLambda = o < lambdas.Count;
+                        double lam = esLambda ? lambdas[o] : 0;
+                        int[] fija = esLambda ? null : fijas[s][o - lambdas.Count];
 
                         foreach (int p in piezas)
                         {
                             int j = Escenario.IdTarea(p, s);
-                            int mejor = -1;
-                            double mejorCrit = double.MaxValue, mejorE = double.MaxValue, mejorFin = 0;
-                            foreach (int i in esc.Validas(j))
+                            int elegida;
+                            if (esLambda)
                             {
-                                double en = esc.Energia(j, i);
-                                double f = Math.Max(fin[p], libre[i]) + esc.Tiempo(j, i);
-                                double crit = f + lam * en;
-                                if (crit < mejorCrit || (crit == mejorCrit && en < mejorE))
+                                elegida = -1;
+                                double mejorCrit = double.MaxValue, mejorE = double.MaxValue;
+                                foreach (int i in esc.Validas(j))
                                 {
-                                    mejor = i; mejorCrit = crit; mejorE = en; mejorFin = f;
+                                    double en = esc.Energia(j, i);
+                                    double f = Math.Max(fin[p], libre[i]) + esc.Tiempo(j, i);
+                                    double crit = f + lam * en;
+                                    if (crit < mejorCrit || (crit == mejorCrit && en < mejorE))
+                                    {
+                                        elegida = i; mejorCrit = crit; mejorE = en;
+                                    }
                                 }
                             }
-                            maqs[p] = mejor;
-                            libre[mejor] = mejorFin;
-                            fin[p] = mejorFin;
-                            enEtapa += mejorE;
-                            if (mejorFin > mk) mk = mejorFin;
+                            else elegida = fija[p];
+
+                            double fFin = Math.Max(fin[p], libre[elegida]) + esc.Tiempo(j, elegida);
+                            maqs[p] = elegida;
+                            libre[elegida] = fFin;
+                            fin[p] = fFin;
+                            enEtapa += esc.Energia(j, elegida);
+                            if (fFin > mk) mk = fFin;
                         }
 
-                        // La PD guarda el mejor candidato para cada nivel de energía acumulada
+                        // Eliminar duplicados: misma máquina para cada pieza => misma opción
+                        if (Repetida(vistas, maqs)) continue;
+                        vistas.Add(maqs);
+                        distintas++;
+
                         int ed = (int)Math.Ceiling(enEtapa * escala - 1e-9);
                         int e2 = e + ed;
                         if (e2 > E) continue; // respeta E_max
@@ -253,68 +180,124 @@ namespace Fabrica.Core
                             Array.Copy(fin, sig.finPieza[e2], P);
                             maqEtapa[s][e2] = maqs;
                             previo[s][e2] = e;
+                            fuente[s][e2] = o;
                         }
                     }
                 }
+                distintasPorEtapa[s] = estados > 0 ? (double)distintas / estados : 0;
                 var tmp = act; act = sig; sig = tmp;
             }
 
-            // --- Mejor estado final y reconstrucción ---
-            int mejorEnergia = -1;
+            // ---------------- Candidatas: mejor combinación de cada nivel de energía final ----------------
+            var niveles = new List<int>();
             for (int e = 0; e <= E; e++)
-                if (!double.IsPositiveInfinity(act.costo[e]) &&
-                    (mejorEnergia < 0 || act.costo[e] < act.costo[mejorEnergia]))
-                    mejorEnergia = e;
+                if (!double.IsPositiveInfinity(act.costo[e])) niveles.Add(e);
+            var costosFinales = act.costo;
+            niveles.Sort((a, b) =>
+            {
+                int c = costosFinales[a].CompareTo(costosFinales[b]);
+                return c != 0 ? c : a.CompareTo(b);
+            });
+            if (niveles.Count > maxCombinaciones) niveles.RemoveRange(maxCombinaciones, niveles.Count - maxCombinaciones);
 
-                if (mejorEnergia < 0)
-                {
-                    nota = "Sin estado factible con esta resolución.";
-                    return null;
-                }
+            // Los 3 planes completos van primero: ante un empate, se reporta el método solo.
+            int[] mejor = null;
+            double mejorCosto = double.MaxValue;
+            string mejorOrigen = null;
+            var vistosPlanes = new HashSet<string>();
+            int evaluadas = 0;
 
-                int[] maq = new int[esc.NumTareas];
-                int ee = mejorEnergia;
+            for (int f = 0; f < completos.Length; f++)
+            {
+                int[] maqF = completos[f].MaquinaPorTarea();
+                if (!vistosPlanes.Add(Firma(maqF))) continue;
+                evaluadas++;
+                Considerar(esc, maqF, "plan completo " + nombresCompletos[f], ref mejor, ref mejorCosto, ref mejorOrigen);
+            }
+
+            foreach (int eFinal in niveles)
+            {
+                int[] maq = new int[n];
+                var fuentes = new string[S];
+                int ee = eFinal;
                 for (int s = S - 1; s >= 0; s--)
                 {
                     int[] m = maqEtapa[s][ee];
                     for (int p = 0; p < P; p++) maq[Escenario.IdTarea(p, s)] = m[p];
+                    fuentes[s] = etiquetas[fuente[s][ee]];
                     ee = previo[s][ee];
                 }
-                nota = "PD repartió la energía entre etapas (" + lambdas.Length + " valores de λ por etapa); usadas "
-                + mejorEnergia + " de " + E + " unidades.";
-                return maq;
+                if (!vistosPlanes.Add(Firma(maq))) continue;
+                evaluadas++;
+                string origen = string.Format("Corte: {0}; Ensamblaje: {1}; Empaquetado: {2}", fuentes[0], fuentes[1], fuentes[2]);
+                Considerar(esc, maq, origen, ref mejor, ref mejorCosto, ref mejorOrigen);
+            }
+
+            if (mejor == null)
+            {
+                // No debería ocurrir (Goloso, D&V y PD son factibles); se devuelve el plan PD
+                mejor = pd.MaquinaPorTarea();
+                mejorOrigen = "respaldo: plan completo PD (ninguna candidata factible)";
+            }
+            sw.Stop();
+
+            var r = Simulador.Simular(esc, mejor, Nombre);
+            // El tiempo incluye el de Goloso, D&V y PD, que el Integrado necesita como entrada.
+            r.tiempoEjecucionMs = sw.Elapsed.TotalMilliseconds
+                                + goloso.tiempoEjecucionMs + dyv.tiempoEjecucionMs + pd.tiempoEjecucionMs;
+
+            var sb = new StringBuilder();
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "Opciones por etapa: {0} ({1} valores de λ + partes de Goloso, D&V y PD); distintas en promedio: " +
+                "Corte {2:F1}, Ensamblaje {3:F1}, Empaquetado {4:F1}. ",
+                L, lambdas.Count, distintasPorEtapa[0], distintasPorEtapa[1], distintasPorEtapa[2]);
+            sb.AppendFormat(CultureInfo.InvariantCulture,
+                "Combinaciones evaluadas con Simular(): {0} ({1} niveles de energía de la PD + 3 planes completos, sin repetidos). ",
+                evaluadas, niveles.Count);
+            sb.Append("Elegida: ").Append(mejorOrigen).Append('.');
+            r.notas = sb.ToString();
+            return r;
         }
 
-        // ===================================================================
-        // BLOQUE 4 · Tablas auxiliares de la PD (una por nivel de energía)
-        // ===================================================================
-        private class Capa
+        private static void Considerar(Escenario esc, int[] maq, string origen,
+                                       ref int[] mejor, ref double mejorCosto, ref string mejorOrigen)
         {
-            public readonly double[] costo, makespan, energia, listo;
-            public readonly double[][] libre;
-            public Capa(int E, int M)
+            bool valido = Simulador.Evaluar(esc, maq, out double mk, out double en);
+            if (!valido || !Simulador.EsFactible(esc, en)) return;
+            double c = esc.Costo(mk, en);
+            if (c < mejorCosto - 1e-9)
             {
-                costo = new double[E + 1]; makespan = new double[E + 1];
-                energia = new double[E + 1]; listo = new double[E + 1];
-                libre = new double[E + 1][];
-                for (int e = 0; e <= E; e++) libre[e] = new double[M];
-            }
-            public void Limpiar()
-            {
-                for (int e = 0; e < costo.Length; e++)
-                {
-                    costo[e] = double.PositiveInfinity;
-                    makespan[e] = 0; energia[e] = 0; listo[e] = 0;
-                    Array.Clear(libre[e], 0, libre[e].Length);
-                }
+                mejor = (int[])maq.Clone();
+                mejorCosto = c;
+                mejorOrigen = origen;
             }
         }
 
-        private class CapaEtapas
+        private static bool Repetida(List<int[]> vistas, int[] maqs)
+        {
+            foreach (int[] v in vistas)
+            {
+                bool igual = true;
+                for (int i = 0; i < v.Length && igual; i++) igual = v[i] == maqs[i];
+                if (igual) return true;
+            }
+            return false;
+        }
+
+        private static string Firma(int[] maq)
+        {
+            var sb = new StringBuilder(maq.Length * 2);
+            foreach (int m in maq) sb.Append(m).Append(',');
+            return sb.ToString();
+        }
+
+        // Una capa de la PD: un estado por nivel de energía acumulada.
+        private class Capa
         {
             public readonly double[] costo, makespan, energia;
             public readonly double[][] libre, finPieza;
-            public CapaEtapas(int E, int M, int P)
+
+            public Capa(int E, int M, int P)
             {
                 costo = new double[E + 1]; makespan = new double[E + 1]; energia = new double[E + 1];
                 libre = new double[E + 1][]; finPieza = new double[E + 1][];
@@ -324,6 +307,7 @@ namespace Fabrica.Core
                     finPieza[e] = new double[P];
                 }
             }
+
             public void Limpiar()
             {
                 for (int e = 0; e < costo.Length; e++)

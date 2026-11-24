@@ -1,175 +1,175 @@
 {
-    "algoritmo": "Prog. Dinámica",
-    "escenario": "Pequeño",
-    "asignaciones": [
-        {
-            "jobId": 3,
-            "piezaId": 1,
-            "etapa": 0,
-            "maquinaId": 0,
-            "inicio": 0.0,
-            "fin": 18.095238095238096,
-            "energia": 112.37142857142857
-        },
-        {
-            "jobId": 9,
-            "piezaId": 3,
-            "etapa": 0,
-            "maquinaId": 2,
-            "inicio": 0.0,
-            "fin": 12.941176470588236,
-            "energia": 51.50588235294118
-        },
-        {
-            "jobId": 10,
-            "piezaId": 3,
-            "etapa": 1,
-            "maquinaId": 1,
-            "inicio": 12.941176470588236,
-            "fin": 49.30481283422459,
-            "energia": 78.18181818181817
-        },
-        {
-            "jobId": 0,
-            "piezaId": 0,
-            "etapa": 0,
-            "maquinaId": 2,
-            "inicio": 12.941176470588236,
-            "fin": 31.176470588235295,
-            "energia": 72.5764705882353
-        },
-        {
-            "jobId": 1,
-            "piezaId": 0,
-            "etapa": 1,
-            "maquinaId": 0,
-            "inicio": 31.176470588235295,
-            "fin": 36.41456582633053,
-            "energia": 32.52857142857143
-        },
-        {
-            "jobId": 12,
-            "piezaId": 4,
-            "etapa": 0,
-            "maquinaId": 2,
-            "inicio": 31.176470588235295,
-            "fin": 54.11764705882353,
-            "energia": 91.30588235294118
-        },
-        {
-            "jobId": 4,
-            "piezaId": 1,
-            "etapa": 1,
-            "maquinaId": 1,
-            "inicio": 49.30481283422459,
-            "fin": 82.03208556149733,
-            "energia": 70.36363636363636
-        },
-        {
-            "jobId": 2,
-            "piezaId": 0,
-            "etapa": 2,
-            "maquinaId": 2,
-            "inicio": 54.11764705882353,
-            "fin": 71.17647058823529,
-            "energia": 67.89411764705882
-        },
-        {
-            "jobId": 15,
-            "piezaId": 5,
-            "etapa": 0,
-            "maquinaId": 2,
-            "inicio": 71.17647058823529,
-            "fin": 77.05882352941177,
-            "energia": 23.411764705882356
-        },
-        {
-            "jobId": 16,
-            "piezaId": 5,
-            "etapa": 1,
-            "maquinaId": 0,
-            "inicio": 77.05882352941177,
-            "fin": 87.53501400560225,
-            "energia": 65.05714285714287
-        },
-        {
-            "jobId": 6,
-            "piezaId": 2,
-            "etapa": 0,
-            "maquinaId": 2,
-            "inicio": 77.05882352941177,
-            "fin": 94.11764705882354,
-            "energia": 67.89411764705882
-        },
-        {
-            "jobId": 5,
-            "piezaId": 1,
-            "etapa": 2,
-            "maquinaId": 1,
-            "inicio": 82.03208556149733,
-            "fin": 108.39572192513369,
-            "energia": 56.68181818181817
-        },
-        {
-            "jobId": 17,
-            "piezaId": 5,
-            "etapa": 2,
-            "maquinaId": 2,
-            "inicio": 94.11764705882354,
-            "fin": 111.1764705882353,
-            "energia": 67.89411764705882
-        },
-        {
-            "jobId": 7,
-            "piezaId": 2,
-            "etapa": 1,
-            "maquinaId": 0,
-            "inicio": 94.11764705882354,
-            "fin": 100.78431372549021,
-            "energia": 41.4
-        },
-        {
-            "jobId": 11,
-            "piezaId": 3,
-            "etapa": 2,
-            "maquinaId": 1,
-            "inicio": 108.39572192513369,
-            "fin": 130.2139037433155,
-            "energia": 46.90909090909091
-        },
-        {
-            "jobId": 8,
-            "piezaId": 2,
-            "etapa": 2,
-            "maquinaId": 2,
-            "inicio": 111.1764705882353,
-            "fin": 121.1764705882353,
-            "energia": 39.8
-        },
-        {
-            "jobId": 13,
-            "piezaId": 4,
-            "etapa": 1,
-            "maquinaId": 1,
-            "inicio": 130.2139037433155,
-            "fin": 147.4866310160428,
-            "energia": 37.136363636363629
-        },
-        {
-            "jobId": 14,
-            "piezaId": 4,
-            "etapa": 2,
-            "maquinaId": 1,
-            "inicio": 147.4866310160428,
-            "fin": 156.5775401069519,
-            "energia": 19.545454545454544
-        }
-    ],
-    "makespan": 156.5775401069519,
-    "energiaTotal": 1042.4576776165009,
-    "energiaMax": 1047.87,
-    "costoTotal": 260.823307868602,
-    "factible": true,
-    "tiempoEjecucionMs": 11.3336,
-    "notas": "Resolución 4000 unidades de energía; usadas 3990."
+  "algoritmo": "Prog. Dinámica",
+  "escenario": "Pequeño",
+  "asignaciones": [
+    {
+      "jobId": 3,
+      "piezaId": 1,
+      "etapa": 0,
+      "maquinaId": 0,
+      "inicio": 0,
+      "fin": 18.095238095238095,
+      "energia": 112.37142857142857
+    },
+    {
+      "jobId": 9,
+      "piezaId": 3,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 0,
+      "fin": 12.941176470588236,
+      "energia": 51.50588235294118
+    },
+    {
+      "jobId": 10,
+      "piezaId": 3,
+      "etapa": 1,
+      "maquinaId": 1,
+      "inicio": 12.941176470588236,
+      "fin": 49.30481283422459,
+      "energia": 78.18181818181817
+    },
+    {
+      "jobId": 0,
+      "piezaId": 0,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 12.941176470588236,
+      "fin": 31.176470588235293,
+      "energia": 72.5764705882353
+    },
+    {
+      "jobId": 1,
+      "piezaId": 0,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 31.176470588235293,
+      "fin": 36.41456582633053,
+      "energia": 32.52857142857143
+    },
+    {
+      "jobId": 12,
+      "piezaId": 4,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 31.176470588235293,
+      "fin": 54.11764705882353,
+      "energia": 91.30588235294118
+    },
+    {
+      "jobId": 4,
+      "piezaId": 1,
+      "etapa": 1,
+      "maquinaId": 1,
+      "inicio": 49.30481283422459,
+      "fin": 82.03208556149733,
+      "energia": 70.36363636363636
+    },
+    {
+      "jobId": 2,
+      "piezaId": 0,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 54.11764705882353,
+      "fin": 71.17647058823529,
+      "energia": 67.89411764705882
+    },
+    {
+      "jobId": 15,
+      "piezaId": 5,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 71.17647058823529,
+      "fin": 77.05882352941177,
+      "energia": 23.411764705882355
+    },
+    {
+      "jobId": 16,
+      "piezaId": 5,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 77.05882352941177,
+      "fin": 87.53501400560225,
+      "energia": 65.05714285714286
+    },
+    {
+      "jobId": 6,
+      "piezaId": 2,
+      "etapa": 0,
+      "maquinaId": 2,
+      "inicio": 77.05882352941177,
+      "fin": 94.11764705882354,
+      "energia": 67.89411764705882
+    },
+    {
+      "jobId": 5,
+      "piezaId": 1,
+      "etapa": 2,
+      "maquinaId": 1,
+      "inicio": 82.03208556149733,
+      "fin": 108.39572192513369,
+      "energia": 56.68181818181817
+    },
+    {
+      "jobId": 17,
+      "piezaId": 5,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 94.11764705882354,
+      "fin": 111.1764705882353,
+      "energia": 67.89411764705882
+    },
+    {
+      "jobId": 7,
+      "piezaId": 2,
+      "etapa": 1,
+      "maquinaId": 0,
+      "inicio": 94.11764705882354,
+      "fin": 100.78431372549021,
+      "energia": 41.4
+    },
+    {
+      "jobId": 11,
+      "piezaId": 3,
+      "etapa": 2,
+      "maquinaId": 1,
+      "inicio": 108.39572192513369,
+      "fin": 130.2139037433155,
+      "energia": 46.90909090909091
+    },
+    {
+      "jobId": 8,
+      "piezaId": 2,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 111.1764705882353,
+      "fin": 121.1764705882353,
+      "energia": 39.8
+    },
+    {
+      "jobId": 13,
+      "piezaId": 4,
+      "etapa": 1,
+      "maquinaId": 1,
+      "inicio": 130.2139037433155,
+      "fin": 147.4866310160428,
+      "energia": 37.136363636363626
+    },
+    {
+      "jobId": 14,
+      "piezaId": 4,
+      "etapa": 2,
+      "maquinaId": 1,
+      "inicio": 147.4866310160428,
+      "fin": 156.5775401069519,
+      "energia": 19.545454545454543
+    }
+  ],
+  "makespan": 156.5775401069519,
+  "energiaTotal": 1042.4576776165009,
+  "energiaMax": 1047.87,
+  "costoTotal": 260.823307868602,
+  "factible": true,
+  "tiempoEjecucionMs": 12.1435,
+  "notas": "Resolución 4000 unidades de energía; usadas 3990."
 }

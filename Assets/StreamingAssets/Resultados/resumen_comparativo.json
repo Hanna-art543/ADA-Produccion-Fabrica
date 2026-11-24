@@ -1,300 +1,240 @@
 {
-    "semilla": 2024,
-    "nota": "Gap = (costo - referencia) / referencia * 100. Referencia: óptimo de Branch & Bound en el escenario pequeño; cota inferior (no alcanzable en general) en los demás.",
-    "escenarios": [
+  "semilla": 2024,
+  "nota": "Gap = (costo - referencia) / referencia * 100. Referencia: óptimo de Branch & Bound en el escenario pequeño; cota inferior (no alcanzable en general) en los demás.",
+  "escenarios": [
+    {
+      "numero": 1,
+      "nombre": "Pequeño",
+      "piezas": 6,
+      "tareas": 18,
+      "maquinas": 3,
+      "energiaMax": 1047.87,
+      "alfa": 1,
+      "beta": 0.1,
+      "tipoReferencia": "optimo B&B",
+      "costoReferencia": 239.21803921568625,
+      "cotaInferior": 185.92580814143838,
+      "filas": [
         {
-            "numero": 1,
-            "nombre": "Pequeño",
-            "piezas": 6,
-            "tareas": 18,
-            "maquinas": 3,
-            "energiaMax": 1047.87,
-            "alfa": 1.0,
-            "beta": 0.1,
-            "tipoReferencia": "optimo B&B",
-            "costoReferencia": 239.21803921568626,
-            "cotaInferior": 185.92580814143839,
-            "filas": [
-                {
-                    "algoritmo": "Goloso (LPT)",
-                    "makespan": 167.80748663101606,
-                    "energia": 1040.452482811306,
-                    "costo": 271.8527349121467,
-                    "gapPorcentaje": 13.642238605189802,
-                    "tiempoMs": 2.0089,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Divide y Vencerás",
-                    "makespan": 143.20346320346318,
-                    "energia": 1047.713216195569,
-                    "costo": 247.97478482302007,
-                    "gapPorcentaje": 3.6605707646648106,
-                    "tiempoMs": 3.9658,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Prog. Dinámica",
-                    "makespan": 156.5775401069519,
-                    "energia": 1042.4576776165009,
-                    "costo": 260.823307868602,
-                    "gapPorcentaje": 9.031621830758251,
-                    "tiempoMs": 11.3336,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Integrado 1: DyV→Goloso→PD",
-                    "makespan": 143.20346320346318,
-                    "energia": 1047.713216195569,
-                    "costo": 247.97478482302007,
-                    "gapPorcentaje": 3.6605707646648106,
-                    "tiempoMs": 14.144300000000002,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Integrado 2: PD reparte E",
-                    "makespan": 144.33409727527374,
-                    "energia": 1039.1749427043544,
-                    "costo": 248.25159154570918,
-                    "gapPorcentaje": 3.7762839122170059,
-                    "tiempoMs": 8.0151,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Aleatorio (mejor factible)",
-                    "makespan": 147.64705882352943,
-                    "energia": 1037.7989304812832,
-                    "costo": 251.42695187165774,
-                    "gapPorcentaje": 5.103675582326616,
-                    "tiempoMs": 2.6383,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Aleatorio (prom. factibles)",
-                    "makespan": 199.10800132725255,
-                    "energia": 1027.0786547676917,
-                    "costo": 301.81586680402196,
-                    "gapPorcentaje": 26.16768693262952,
-                    "tiempoMs": 2.6383,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Recocido Simulado",
-                    "makespan": 135.67099567099567,
-                    "energia": 1046.6385790679906,
-                    "costo": 240.33485357779473,
-                    "gapPorcentaje": 0.46686042815588726,
-                    "tiempoMs": 46.8123,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Branch & Bound",
-                    "makespan": 134.76190476190477,
-                    "energia": 1044.5613445378149,
-                    "costo": 239.21803921568626,
-                    "gapPorcentaje": 0.0,
-                    "tiempoMs": 4.5895,
-                    "factible": true,
-                    "sinSolucion": false
-                }
-            ],
-            "notas": [
-                "Aleatorio: 13.2 % factibles (132 de 1000 corridas)."
-            ]
+          "algoritmo": "Goloso (LPT)",
+          "makespan": 167.80748663101605,
+          "energia": 1040.452482811306,
+          "costo": 271.8527349121467,
+          "gapPorcentaje": 13.642238605189801,
+          "tiempoMs": 2.3257,
+          "factible": true,
+          "sinSolucion": false
         },
         {
-            "numero": 2,
-            "nombre": "Mediano",
-            "piezas": 20,
-            "tareas": 60,
-            "maquinas": 5,
-            "energiaMax": 4470.64,
-            "alfa": 1.0,
-            "beta": 0.1,
-            "tipoReferencia": "cota inferior",
-            "costoReferencia": 544.607689258312,
-            "cotaInferior": 544.607689258312,
-            "filas": [
-                {
-                    "algoritmo": "Goloso (LPT)",
-                    "makespan": 272.2647058823529,
-                    "energia": 4463.770795206972,
-                    "costo": 718.6417854030501,
-                    "gapPorcentaje": 31.95586466686706,
-                    "tiempoMs": 0.1908,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Divide y Vencerás",
-                    "makespan": 227.06153846153846,
-                    "energia": 4468.241546840958,
-                    "costo": 673.8856931456343,
-                    "gapPorcentaje": 23.73782200236336,
-                    "tiempoMs": 1.024,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Prog. Dinámica",
-                    "makespan": 202.23076923076924,
-                    "energia": 4436.038823529413,
-                    "costo": 645.8346515837106,
-                    "gapPorcentaje": 18.587134247637449,
-                    "tiempoMs": 20.441200000000003,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Integrado 1: DyV→Goloso→PD",
-                    "makespan": 202.23076923076924,
-                    "energia": 4436.038823529413,
-                    "costo": 645.8346515837106,
-                    "gapPorcentaje": 18.587134247637449,
-                    "tiempoMs": 20.216900000000004,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Integrado 2: PD reparte E",
-                    "makespan": 198.6470588235294,
-                    "energia": 4457.485272331154,
-                    "costo": 644.3955860566448,
-                    "gapPorcentaje": 18.322895318321984,
-                    "tiempoMs": 9.493500000000001,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Aleatorio (mejor factible)",
-                    "makespan": 245.2941176470588,
-                    "energia": 4452.916339869281,
-                    "costo": 690.5857516339869,
-                    "gapPorcentaje": 26.80426025098523,
-                    "tiempoMs": 17.5484,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Aleatorio (prom. factibles)",
-                    "makespan": 311.7821984683878,
-                    "energia": 4458.648630292697,
-                    "costo": 757.6470614976574,
-                    "gapPorcentaje": 39.11795158997453,
-                    "tiempoMs": 17.5484,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Recocido Simulado",
-                    "makespan": 168.82352941176473,
-                    "energia": 4470.508529411764,
-                    "costo": 615.8743823529412,
-                    "gapPorcentaje": 13.085877136932384,
-                    "tiempoMs": 305.9647,
-                    "factible": true,
-                    "sinSolucion": false
-                }
-            ],
-            "notas": [
-                "Aleatorio: 2.3 % factibles (23 de 1000 corridas)."
-            ]
+          "algoritmo": "Divide y Vencerás",
+          "makespan": 143.20346320346317,
+          "energia": 1047.713216195569,
+          "costo": 247.97478482302006,
+          "gapPorcentaje": 3.6605707646648105,
+          "tiempoMs": 3.6543,
+          "factible": true,
+          "sinSolucion": false
         },
         {
-            "numero": 3,
-            "nombre": "Grande",
-            "piezas": 50,
-            "tareas": 150,
-            "maquinas": 8,
-            "energiaMax": 9176.58,
-            "alfa": 1.0,
-            "beta": 0.1,
-            "tipoReferencia": "cota inferior",
-            "costoReferencia": 1037.4137373737376,
-            "cotaInferior": 1037.4137373737376,
-            "filas": [
-                {
-                    "algoritmo": "Goloso (LPT)",
-                    "makespan": 902.4545454545455,
-                    "energia": 9162.461136363636,
-                    "costo": 1818.700659090909,
-                    "gapPorcentaje": 75.31102525160662,
-                    "tiempoMs": 0.6077,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Divide y Vencerás",
-                    "makespan": 1031.0545454545454,
-                    "energia": 9148.408939393938,
-                    "costo": 1945.8954393939393,
-                    "gapPorcentaje": 87.57178252912542,
-                    "tiempoMs": 2.4682,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Prog. Dinámica",
-                    "makespan": 806.8545454545455,
-                    "energia": 8995.118636363633,
-                    "costo": 1706.3664090909087,
-                    "gapPorcentaje": 64.4827273456641,
-                    "tiempoMs": 90.281,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Integrado 1: DyV→Goloso→PD",
-                    "makespan": 806.8545454545455,
-                    "energia": 8995.118636363633,
-                    "costo": 1706.3664090909087,
-                    "gapPorcentaje": 64.4827273456641,
-                    "tiempoMs": 94.73570000000001,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Integrado 2: PD reparte E",
-                    "makespan": 775.5454545454546,
-                    "energia": 9164.844924242421,
-                    "costo": 1692.0299469696968,
-                    "gapPorcentaje": 63.10078477012955,
-                    "tiempoMs": 31.9574,
-                    "factible": true,
-                    "sinSolucion": false
-                },
-                {
-                    "algoritmo": "Aleatorio",
-                    "makespan": 0.0,
-                    "energia": 0.0,
-                    "costo": 0.0,
-                    "gapPorcentaje": 0.0,
-                    "tiempoMs": 76.9919,
-                    "factible": false,
-                    "sinSolucion": true
-                },
-                {
-                    "algoritmo": "Recocido Simulado",
-                    "makespan": 714.5454545454545,
-                    "energia": 9164.074318181812,
-                    "costo": 1630.9528863636358,
-                    "gapPorcentaje": 57.21334966051933,
-                    "tiempoMs": 1278.6786,
-                    "factible": true,
-                    "sinSolucion": false
-                }
-            ],
-            "notas": [
-                "Aleatorio: 0.0 % factibles (0 de 1000 corridas)."
-            ]
+          "algoritmo": "Prog. Dinámica",
+          "makespan": 156.5775401069519,
+          "energia": 1042.4576776165009,
+          "costo": 260.823307868602,
+          "gapPorcentaje": 9.031621830758251,
+          "tiempoMs": 12.1435,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Integrado (D&V + Goloso + PD)",
+          "makespan": 143.37153043035394,
+          "energia": 1034.1619556913672,
+          "costo": 246.78772599949068,
+          "gapPorcentaje": 3.1643461373660737,
+          "tiempoMs": 59.67179999999999,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Aleatorio (mejor factible)",
+          "makespan": 147.64705882352942,
+          "energia": 1037.7989304812832,
+          "costo": 251.42695187165774,
+          "gapPorcentaje": 5.103675582326616,
+          "tiempoMs": 11.9037,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Aleatorio (prom. factibles)",
+          "makespan": 199.10800132725254,
+          "energia": 1027.0786547676917,
+          "costo": 301.81586680402194,
+          "gapPorcentaje": 26.16768693262952,
+          "tiempoMs": 11.9037,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Branch & Bound",
+          "makespan": 134.76190476190476,
+          "energia": 1044.5613445378149,
+          "costo": 239.21803921568625,
+          "gapPorcentaje": 0,
+          "tiempoMs": 16.0486,
+          "factible": true,
+          "sinSolucion": false
         }
-    ]
+      ],
+      "notas": [
+        "Aleatorio: 13.2 % factibles (132 de 1000 corridas)."
+      ]
+    },
+    {
+      "numero": 2,
+      "nombre": "Mediano",
+      "piezas": 20,
+      "tareas": 60,
+      "maquinas": 5,
+      "energiaMax": 4470.64,
+      "alfa": 1,
+      "beta": 0.1,
+      "tipoReferencia": "cota inferior",
+      "costoReferencia": 544.607689258312,
+      "cotaInferior": 544.607689258312,
+      "filas": [
+        {
+          "algoritmo": "Goloso (LPT)",
+          "makespan": 272.2647058823529,
+          "energia": 4463.770795206972,
+          "costo": 718.6417854030501,
+          "gapPorcentaje": 31.95586466686706,
+          "tiempoMs": 0.3891,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Divide y Vencerás",
+          "makespan": 227.06153846153845,
+          "energia": 4468.241546840958,
+          "costo": 673.8856931456343,
+          "gapPorcentaje": 23.73782200236336,
+          "tiempoMs": 0.7957,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Prog. Dinámica",
+          "makespan": 202.23076923076923,
+          "energia": 4436.038823529413,
+          "costo": 645.8346515837106,
+          "gapPorcentaje": 18.587134247637447,
+          "tiempoMs": 5.9875,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Integrado (D&V + Goloso + PD)",
+          "makespan": 188.55384615384617,
+          "energia": 4457.947647058823,
+          "costo": 634.3486108597285,
+          "gapPorcentaje": 16.478085670004493,
+          "tiempoMs": 26.4897,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Aleatorio (mejor factible)",
+          "makespan": 245.2941176470588,
+          "energia": 4452.916339869281,
+          "costo": 690.5857516339869,
+          "gapPorcentaje": 26.80426025098523,
+          "tiempoMs": 7.6917,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Aleatorio (prom. factibles)",
+          "makespan": 311.7821984683878,
+          "energia": 4458.648630292697,
+          "costo": 757.6470614976574,
+          "gapPorcentaje": 39.11795158997453,
+          "tiempoMs": 7.6917,
+          "factible": true,
+          "sinSolucion": false
+        }
+      ],
+      "notas": [
+        "Aleatorio: 2.3 % factibles (23 de 1000 corridas)."
+      ]
+    },
+    {
+      "numero": 3,
+      "nombre": "Grande",
+      "piezas": 50,
+      "tareas": 150,
+      "maquinas": 8,
+      "energiaMax": 9176.58,
+      "alfa": 1,
+      "beta": 0.1,
+      "tipoReferencia": "cota inferior",
+      "costoReferencia": 1037.4137373737376,
+      "cotaInferior": 1037.4137373737376,
+      "filas": [
+        {
+          "algoritmo": "Goloso (LPT)",
+          "makespan": 902.4545454545455,
+          "energia": 9162.461136363636,
+          "costo": 1818.700659090909,
+          "gapPorcentaje": 75.31102525160662,
+          "tiempoMs": 2.7232,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Divide y Vencerás",
+          "makespan": 1031.0545454545454,
+          "energia": 9148.408939393938,
+          "costo": 1945.8954393939393,
+          "gapPorcentaje": 87.57178252912541,
+          "tiempoMs": 2.3775,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Prog. Dinámica",
+          "makespan": 806.8545454545455,
+          "energia": 8995.118636363633,
+          "costo": 1706.3664090909087,
+          "gapPorcentaje": 64.4827273456641,
+          "tiempoMs": 25.0451,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Integrado (D&V + Goloso + PD)",
+          "makespan": 766.5,
+          "energia": 9123.179545454544,
+          "costo": 1678.8179545454545,
+          "gapPorcentaje": 61.827233828179516,
+          "tiempoMs": 130.3833,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Aleatorio",
+          "makespan": 0,
+          "energia": 0,
+          "costo": 0,
+          "gapPorcentaje": 0,
+          "tiempoMs": 51.3359,
+          "factible": false,
+          "sinSolucion": true
+        }
+      ],
+      "notas": [
+        "Aleatorio: 0.0 % factibles (0 de 1000 corridas)."
+      ]
+    }
+  ]
 }

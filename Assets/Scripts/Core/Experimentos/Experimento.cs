@@ -14,15 +14,15 @@ namespace Fabrica.Core
         public int iteracionesCalibracion = 30; // búsqueda binaria de λ (Goloso y D&V)
         public double holguraEnergia = 0.35;  // E_max = Emin + holgura·(Emax_posible − Emin)
         public int corridasAleatorio = 1000;
-        public int iteracionesRecocido = 20000;
         public int resolucionPD = 4000;       // unidades discretas de energía en la PD
         public int maxPiezasBranchAndBound = 8;
-        public int lambdasIntegrado = 12;     // valores de λ por etapa en el Integrado 2
+        public int lambdasIntegrado = 12;     // λ en escala logarítmica por etapa en el Integrado (+5 fijos)
+        public int combinacionesIntegrado = 200; // combinaciones de la PD que el Integrado evalúa con Simular()
     }
 
     public class EntradaPlan
     {
-        public string clave; // sufijo del archivo: greedy, dc, pd, int1, int2, random, sa, bb
+        public string clave; // sufijo del archivo: greedy, dc, pd, int, random, bb
         public PlanResult plan;
     }
 
@@ -51,29 +51,22 @@ namespace Fabrica.Core
 
                 // --- Métodos por separado ---
                 PlanResult greedy = Goloso.Resolver(esc, cfg.iteracionesCalibracion);
+                PlanResult dc = DivideVenceras.Resolver(esc, cfg.iteracionesCalibracion);
+                PlanResult pd = ProgramacionDinamica.Resolver(esc, cfg.resolucionPD);
                 res.planes.Add(new EntradaPlan { clave = "greedy", plan = greedy });
-                res.planes.Add(new EntradaPlan { clave = "dc", plan = DivideVenceras.Resolver(esc, cfg.iteracionesCalibracion) });
-                res.planes.Add(new EntradaPlan { clave = "pd", plan = ProgramacionDinamica.Resolver(esc, cfg.resolucionPD) });
+                res.planes.Add(new EntradaPlan { clave = "dc", plan = dc });
+                res.planes.Add(new EntradaPlan { clave = "pd", plan = pd });
 
-                // --- Métodos integrados (DyV + Goloso + PD) ---
+                // --- Método integrado oficial (D&V + Goloso + PD); usa los tres planes anteriores ---
                 res.planes.Add(new EntradaPlan
                 {
-                    clave = "int1",
-                    plan = PlanificadorIntegrado.Resolver(esc, cfg.iteracionesCalibracion, cfg.resolucionPD)
-                });
-                res.planes.Add(new EntradaPlan
-                {
-                    clave = "int2",
-                    plan = PlanificadorIntegrado.ResolverB(esc, cfg.resolucionPD, cfg.lambdasIntegrado)
+                    clave = "int",
+                    plan = PlanificadorIntegrado.Resolver(esc, greedy, dc, pd, cfg.resolucionPD, cfg.lambdasIntegrado,
+                                                          cfg.combinacionesIntegrado, cfg.iteracionesCalibracion)
                 });
 
-                // --- Línea base y extras ---
+                // --- Línea base ---
                 res.planes.Add(new EntradaPlan { clave = "random", plan = Aleatorio.Resolver(esc, cfg.corridasAleatorio, semillaEsc) });
-                res.planes.Add(new EntradaPlan
-                {
-                    clave = "sa",
-                    plan = RecocidoSimulado.Resolver(esc, greedy.MaquinaPorTarea(), cfg.iteracionesRecocido, semillaEsc + 1)
-                });
 
                 res.cotaInferior = Cotas.CotaCosto(esc);
                 if (esc.numPiezas <= cfg.maxPiezasBranchAndBound)
