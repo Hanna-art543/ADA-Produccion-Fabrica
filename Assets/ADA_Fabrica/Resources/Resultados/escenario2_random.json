@@ -555,6 +555,6 @@
   "energiaMax": 4470.64,
   "costoTotal": 690.5857516339869,
   "factible": true,
-  "tiempoEjecucionMs": 13.3012,
+  "tiempoEjecucionMs": 7.6917,
   "notas": "23 de 1000 corridas factibles (energía ≤ E_max)."
 }

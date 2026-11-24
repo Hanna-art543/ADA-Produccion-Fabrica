@@ -21,7 +21,7 @@
           "energia": 1040.452482811306,
           "costo": 271.8527349121467,
           "gapPorcentaje": 13.642238605189801,
-          "tiempoMs": 0.4613,
+          "tiempoMs": 2.3257,
           "factible": true,
           "sinSolucion": false
         },
@@ -31,7 +31,7 @@
           "energia": 1047.713216195569,
           "costo": 247.97478482302006,
           "gapPorcentaje": 3.6605707646648105,
-          "tiempoMs": 0.8365,
+          "tiempoMs": 3.6543,
           "factible": true,
           "sinSolucion": false
         },
@@ -41,7 +41,17 @@
           "energia": 1042.4576776165009,
           "costo": 260.823307868602,
           "gapPorcentaje": 9.031621830758251,
-          "tiempoMs": 3.5033,
+          "tiempoMs": 12.1435,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Integrado (D&V + Goloso + PD)",
+          "makespan": 143.37153043035394,
+          "energia": 1034.1619556913672,
+          "costo": 246.78772599949068,
+          "gapPorcentaje": 3.1643461373660737,
+          "tiempoMs": 59.67179999999999,
           "factible": true,
           "sinSolucion": false
         },
@@ -51,7 +61,7 @@
           "energia": 1037.7989304812832,
           "costo": 251.42695187165774,
           "gapPorcentaje": 5.103675582326616,
-          "tiempoMs": 2.9275,
+          "tiempoMs": 11.9037,
           "factible": true,
           "sinSolucion": false
         },
@@ -61,17 +71,7 @@
           "energia": 1027.0786547676917,
           "costo": 301.81586680402194,
           "gapPorcentaje": 26.16768693262952,
-          "tiempoMs": 2.9275,
-          "factible": true,
-          "sinSolucion": false
-        },
-        {
-          "algoritmo": "Recocido Simulado",
-          "makespan": 135.67099567099567,
-          "energia": 1046.6385790679906,
-          "costo": 240.33485357779472,
-          "gapPorcentaje": 0.46686042815588724,
-          "tiempoMs": 35.0519,
+          "tiempoMs": 11.9037,
           "factible": true,
           "sinSolucion": false
         },
@@ -81,7 +81,7 @@
           "energia": 1044.5613445378149,
           "costo": 239.21803921568625,
           "gapPorcentaje": 0,
-          "tiempoMs": 4.7363,
+          "tiempoMs": 16.0486,
           "factible": true,
           "sinSolucion": false
         }
@@ -109,7 +109,7 @@
           "energia": 4463.770795206972,
           "costo": 718.6417854030501,
           "gapPorcentaje": 31.95586466686706,
-          "tiempoMs": 0.126,
+          "tiempoMs": 0.3891,
           "factible": true,
           "sinSolucion": false
         },
@@ -119,7 +119,7 @@
           "energia": 4468.241546840958,
           "costo": 673.8856931456343,
           "gapPorcentaje": 23.73782200236336,
-          "tiempoMs": 0.355,
+          "tiempoMs": 0.7957,
           "factible": true,
           "sinSolucion": false
         },
@@ -129,7 +129,17 @@
           "energia": 4436.038823529413,
           "costo": 645.8346515837106,
           "gapPorcentaje": 18.587134247637447,
-          "tiempoMs": 3.1691,
+          "tiempoMs": 5.9875,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Integrado (D&V + Goloso + PD)",
+          "makespan": 188.55384615384617,
+          "energia": 4457.947647058823,
+          "costo": 634.3486108597285,
+          "gapPorcentaje": 16.478085670004493,
+          "tiempoMs": 26.4897,
           "factible": true,
           "sinSolucion": false
         },
@@ -139,7 +149,7 @@
           "energia": 4452.916339869281,
           "costo": 690.5857516339869,
           "gapPorcentaje": 26.80426025098523,
-          "tiempoMs": 13.3012,
+          "tiempoMs": 7.6917,
           "factible": true,
           "sinSolucion": false
         },
@@ -149,17 +159,7 @@
           "energia": 4458.648630292697,
           "costo": 757.6470614976574,
           "gapPorcentaje": 39.11795158997453,
-          "tiempoMs": 13.3012,
-          "factible": true,
-          "sinSolucion": false
-        },
-        {
-          "algoritmo": "Recocido Simulado",
-          "makespan": 168.82352941176472,
-          "energia": 4470.508529411764,
-          "costo": 615.8743823529412,
-          "gapPorcentaje": 13.085877136932384,
-          "tiempoMs": 187.5513,
+          "tiempoMs": 7.6917,
           "factible": true,
           "sinSolucion": false
         }
@@ -187,7 +187,7 @@
           "energia": 9162.461136363636,
           "costo": 1818.700659090909,
           "gapPorcentaje": 75.31102525160662,
-          "tiempoMs": 1.5881,
+          "tiempoMs": 2.7232,
           "factible": true,
           "sinSolucion": false
         },
@@ -197,7 +197,7 @@
           "energia": 9148.408939393938,
           "costo": 1945.8954393939393,
           "gapPorcentaje": 87.57178252912541,
-          "tiempoMs": 1.4982,
+          "tiempoMs": 2.3775,
           "factible": true,
           "sinSolucion": false
         },
@@ -207,7 +207,17 @@
           "energia": 8995.118636363633,
           "costo": 1706.3664090909087,
           "gapPorcentaje": 64.4827273456641,
-          "tiempoMs": 14.2785,
+          "tiempoMs": 25.0451,
+          "factible": true,
+          "sinSolucion": false
+        },
+        {
+          "algoritmo": "Integrado (D&V + Goloso + PD)",
+          "makespan": 766.5,
+          "energia": 9123.179545454544,
+          "costo": 1678.8179545454545,
+          "gapPorcentaje": 61.827233828179516,
+          "tiempoMs": 130.3833,
           "factible": true,
           "sinSolucion": false
         },
@@ -217,19 +227,9 @@
           "energia": 0,
           "costo": 0,
           "gapPorcentaje": 0,
-          "tiempoMs": 20.4779,
+          "tiempoMs": 51.3359,
           "factible": false,
           "sinSolucion": true
-        },
-        {
-          "algoritmo": "Recocido Simulado",
-          "makespan": 714.5454545454545,
-          "energia": 9164.074318181812,
-          "costo": 1630.9528863636358,
-          "gapPorcentaje": 57.21334966051933,
-          "tiempoMs": 230.7981,
-          "factible": true,
-          "sinSolucion": false
         }
       ],
       "notas": [

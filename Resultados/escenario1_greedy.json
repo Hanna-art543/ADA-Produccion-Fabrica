@@ -170,6 +170,6 @@
   "energiaMax": 1047.87,
   "costoTotal": 271.8527349121467,
   "factible": true,
-  "tiempoEjecucionMs": 0.4613,
+  "tiempoEjecucionMs": 2.3257,
   "notas": "λ calibrado = 1.84342 (33 evaluaciones de la búsqueda binaria)."
 }

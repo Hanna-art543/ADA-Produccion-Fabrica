@@ -1,5 +1,5 @@
 {
-  "algoritmo": "Recocido Simulado",
+  "algoritmo": "Integrado (D&V + Goloso + PD)",
   "escenario": "Pequeño",
   "asignaciones": [
     {
@@ -93,17 +93,17 @@
       "energia": 91.30588235294118
     },
     {
-      "jobId": 5,
-      "piezaId": 1,
-      "etapa": 2,
+      "jobId": 10,
+      "piezaId": 3,
+      "etapa": 1,
       "maquinaId": 1,
       "inicio": 57.48917748917749,
-      "fin": 83.85281385281385,
-      "energia": 56.68181818181817
+      "fin": 93.85281385281385,
+      "energia": 78.18181818181817
     },
     {
-      "jobId": 2,
-      "piezaId": 0,
+      "jobId": 5,
+      "piezaId": 1,
       "etapa": 2,
       "maquinaId": 2,
       "inicio": 76.47058823529412,
@@ -111,65 +111,65 @@
       "energia": 67.89411764705882
     },
     {
-      "jobId": 13,
-      "piezaId": 4,
-      "etapa": 1,
-      "maquinaId": 0,
-      "inicio": 76.47058823529412,
-      "fin": 85.51820728291317,
-      "energia": 56.18571428571428
-    },
-    {
-      "jobId": 10,
-      "piezaId": 3,
-      "etapa": 1,
-      "maquinaId": 1,
-      "inicio": 83.85281385281385,
-      "fin": 120.21645021645021,
-      "energia": 78.18181818181817
-    },
-    {
-      "jobId": 14,
-      "piezaId": 4,
-      "etapa": 2,
-      "maquinaId": 2,
-      "inicio": 93.52941176470588,
-      "fin": 99.41176470588235,
-      "energia": 23.411764705882355
-    },
-    {
       "jobId": 17,
       "piezaId": 5,
       "etapa": 2,
       "maquinaId": 2,
-      "inicio": 99.41176470588235,
-      "fin": 116.47058823529412,
+      "inicio": 93.52941176470588,
+      "fin": 110.58823529411765,
       "energia": 67.89411764705882
+    },
+    {
+      "jobId": 2,
+      "piezaId": 0,
+      "etapa": 2,
+      "maquinaId": 1,
+      "inicio": 93.85281385281385,
+      "fin": 120.21645021645021,
+      "energia": 56.68181818181817
     },
     {
       "jobId": 11,
       "piezaId": 3,
       "etapa": 2,
       "maquinaId": 2,
-      "inicio": 120.21645021645021,
-      "fin": 134.33409727527373,
+      "inicio": 110.58823529411765,
+      "fin": 124.70588235294119,
       "energia": 56.188235294117646
+    },
+    {
+      "jobId": 13,
+      "piezaId": 4,
+      "etapa": 1,
+      "maquinaId": 1,
+      "inicio": 120.21645021645021,
+      "fin": 137.48917748917748,
+      "energia": 37.136363636363626
     },
     {
       "jobId": 8,
       "piezaId": 2,
       "etapa": 2,
-      "maquinaId": 1,
-      "inicio": 120.21645021645021,
-      "fin": 135.67099567099567,
-      "energia": 33.22727272727273
+      "maquinaId": 2,
+      "inicio": 124.70588235294119,
+      "fin": 134.7058823529412,
+      "energia": 39.8
+    },
+    {
+      "jobId": 14,
+      "piezaId": 4,
+      "etapa": 2,
+      "maquinaId": 2,
+      "inicio": 137.48917748917748,
+      "fin": 143.37153043035394,
+      "energia": 23.411764705882355
     }
   ],
-  "makespan": 135.67099567099567,
-  "energiaTotal": 1046.6385790679906,
+  "makespan": 143.37153043035394,
+  "energiaTotal": 1034.1619556913672,
   "energiaMax": 1047.87,
-  "costoTotal": 240.33485357779472,
+  "costoTotal": 246.78772599949068,
   "factible": true,
-  "tiempoEjecucionMs": 35.0519,
-  "notas": "20000 iteraciones, 1685 aceptadas."
+  "tiempoEjecucionMs": 59.67179999999999,
+  "notas": "Opciones por etapa: 20 (17 valores de λ + partes de Goloso, D&V y PD); distintas en promedio: Corte 10.0, Ensamblaje 8.1, Empaquetado 9.3. Combinaciones evaluadas con Simular(): 201 (200 niveles de energía de la PD + 3 planes completos, sin repetidos). Elegida: Corte: λ=3.687; Ensamblaje: parte de D&V; Empaquetado: λ=0."
 }

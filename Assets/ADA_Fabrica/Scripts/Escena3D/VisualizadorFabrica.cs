@@ -192,7 +192,7 @@ namespace Fabrica.Escena
             Construir(p, r, reproducirAlCargar);
         }
 
-        /// <summary>Lee el JSON (claves: greedy, dc, pd, random, sa, bb). Con ControladorPlan, pasa por él para que la UI se entere.</summary>
+        /// <summary>Lee el JSON (claves: greedy, dc, pd, int, random, bb). Con ControladorPlan, pasa por él para que la UI se entere.</summary>
         public void CargarEscenario(int escenario, string clave)
         {
             if (controlador != null) { controlador.CargarPlan(escenario, clave); return; }

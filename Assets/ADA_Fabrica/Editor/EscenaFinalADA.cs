@@ -143,6 +143,7 @@ namespace Fabrica.UI.EditorADA
                            "Esc " + e + " " + c + ": " + p.asignaciones.Count + " tareas, en t=makespan " + m.PiezasTerminadas(m.Makespan) + "/" + m.CantidadPiezas +
                            " piezas en la salida, energía " + CalculosFabrica.N(eFin, 2) + " = " + CalculosFabrica.N(p.energiaTotal, 2));
                 }
+            // greedy, dc, pd, int, random en los 3 escenarios + bb en el 1 = 3·5 + 1 = 16
             ok(planes == 16, "16 planes cargan (" + planes + ")");
 
             PlanResult g1 = RepositorioPlanes.Plan(1, "greedy");

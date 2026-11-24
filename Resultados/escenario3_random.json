@@ -14,6 +14,6 @@
   "energiaMax": 9176.58,
   "costoTotal": 0,
   "factible": false,
-  "tiempoEjecucionMs": 20.4779,
+  "tiempoEjecucionMs": 51.3359,
   "notas": "Sin solución factible: ninguna de las 1000 corridas cumple E_max."
 }

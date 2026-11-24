@@ -13,7 +13,7 @@ public static class CargadorResultados
     public const string Carpeta = "Resultados";
 
     // Sufijos de archivo, en el mismo orden que la tabla del informe.
-    public static readonly string[] Claves = { "greedy", "dc", "pd", "random", "sa", "bb" };
+    public static readonly string[] Claves = { "greedy", "dc", "pd", "int", "random", "bb" };
 
     public static string NombreMetodo(string clave)
     {
@@ -22,8 +22,8 @@ public static class CargadorResultados
             case "greedy": return "Goloso (LPT)";
             case "dc": return "Divide y Vencerás";
             case "pd": return "Prog. Dinámica";
+            case "int": return "Integrado (D&V + Goloso + PD)";
             case "random": return "Aleatorio";
-            case "sa": return "Recocido Simulado";
             case "bb": return "Branch & Bound";
             default: return clave;
         }
